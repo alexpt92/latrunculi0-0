@@ -299,7 +299,7 @@ public class boardScript : MonoBehaviour
             {
                 if (board[i, j+1].button.Contains(defenseButton))
                 {
-                    removeButton(new Vector2(i + 1, j));
+                    removeButton(new Vector2(i, j+1));
                     return;
                 }
             }
@@ -308,7 +308,26 @@ public class boardScript : MonoBehaviour
 
     void removeButton(Vector2 pos)
     {
+
+        Button attackedButton = GameObject.Find(board[(int)pos.x, (int)pos.y].button).GetComponent<Button>();
+        string buttonName = board[(int)pos.x, (int)pos.y].button;
+        Button[] wButtons = wList.ToArray();
+        Button[] bButtons = bList.ToArray();
+        int wPos = Array.IndexOf(wButtons, attackedButton);
+        int bPos = Array.IndexOf(bButtons, attackedButton);
+        if (wPos != -1)
+        {
+            wList.Remove(attackedButton);
+        }
+        else if (bPos != -1)
+        {
+            bList.Remove(attackedButton);
+
+        }
+        board[(int)pos.x, (int)pos.y].button = null;
+       
         Debug.Log("removed" + pos.y + pos.x);
+        Destroy(attackedButton.gameObject);
     }
 
     Vector2 getFieldPos(Vector2 buttonPos)
