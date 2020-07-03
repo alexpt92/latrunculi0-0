@@ -297,7 +297,7 @@ public class boardScript : MonoBehaviour
             }
         }
 
-        if (j < (this.x - 1) &&  (board[i, j+2].button != null && board[i, j+1].button != null))
+        if ((j < (this.x - 2)  && board[i, j+1].button != null))
         {
             if (board[i, j+2].button.Contains(attackButton))
             {
