@@ -17,6 +17,7 @@ public class boardScript : MonoBehaviour
     public List<Image> highlightedFields;
     public Sprite m_Sprite;
     public Sprite o_Sprite;
+    public bool moveAgain = false;
 
     // Start is called before the first frame update
     public boardScript(int newX, int newY, float newXCoord, float newYCoord, Sprite newSprite, Sprite oldSprite)
@@ -259,6 +260,7 @@ public class boardScript : MonoBehaviour
                     if (board[i - 1, j].button.Contains(defenseButton))
                     {
                         removeButton(new Vector2(i - 1, j));
+                        moveAgain = true;
                         return;
                     }
 
@@ -275,6 +277,7 @@ public class boardScript : MonoBehaviour
                     if (board[i + 1, j].button.Contains(defenseButton))
                     {
                         removeButton(new Vector2(i + 1, j));
+                        moveAgain = true;
                         return;
                     }
                 }
@@ -288,6 +291,7 @@ public class boardScript : MonoBehaviour
                 if (board[i, j - 1].button.Contains(defenseButton))
                 {
                     removeButton(new Vector2(i, j - 1));
+                    moveAgain = true;
                     return;
                 }
             }
@@ -300,10 +304,12 @@ public class boardScript : MonoBehaviour
                 if (board[i, j+1].button.Contains(defenseButton))
                 {
                     removeButton(new Vector2(i, j+1));
+                    moveAgain = true;
                     return;
                 }
             }
         }
+        moveAgain = false;
     }
 
     void removeButton(Vector2 pos)
