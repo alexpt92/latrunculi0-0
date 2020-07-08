@@ -10,9 +10,9 @@ public class SoundManagerScript : MonoBehaviour
     // Start is called before the first frame update
     public SoundManagerScript()
     {
-        moveSound = Resources.Load<AudioClip>("moving");
+     //   moveSound = Resources.Load<AudioClip>("moving");
 
-        audioSrc = GetComponent<AudioSource>();
+     //   audioSrc = GetComponent<AudioSource>();
     }
    
     void Start ()
