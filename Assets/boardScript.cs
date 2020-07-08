@@ -18,10 +18,11 @@ public class boardScript : MonoBehaviour
     public Sprite m_Sprite;
     public Sprite o_Sprite;
     public bool moveAgain = false;
+    public string winner = null;
 
     // Start is called before the first frame update
     public boardScript(int newX, int newY, float newXCoord, float newYCoord, Sprite newSprite, Sprite oldSprite)
-    {
+    {   // Constructor Board
         x = newX;
         y = newY;
         xCoord = newXCoord;
@@ -43,7 +44,7 @@ public class boardScript : MonoBehaviour
     }
 
     void initializePieces()
-    {
+    {   //Initializes Pieces
         for (int i = 1; i <= ((x * 2)); i++)
         {
             string name = "wButton" + i.ToString();
@@ -57,7 +58,7 @@ public class boardScript : MonoBehaviour
 
 
     void initializeBoard()
-    {
+    {   //initializes Board
         board = new Field[y, x];
         int wCounter = 0;
         int bCounter = 0;
@@ -84,7 +85,7 @@ public class boardScript : MonoBehaviour
     }
 
     public void CleanHighlights()
-    {
+    {   //clears Highlighted Fields
         if (highlightedFields != null) 
         { 
             Image[] possibleFields = highlightedFields.ToArray();
@@ -97,12 +98,12 @@ public class boardScript : MonoBehaviour
     }
 
     public void findPossiblePaths(int[]pieceField)
-    {
+    {   //Searching for possible Paths
         CleanHighlights();
         highlightedFields = new List<Image>();
 
         for (int i = 1; i<=pieceField[0]; i ++)
-        {   //suche an der y-Achse
+        {   //suche an der x-Achse
             if (board[pieceField[0] - i, pieceField[1]].button == null)
                 highlightedFields.Add(GameObject.Find((pieceField[0] - i) + "x" + (pieceField[1])).GetComponent<Image>());
             else
@@ -111,7 +112,7 @@ public class boardScript : MonoBehaviour
 
         for (int i = pieceField[0] + 1; i< this.y; i++)
         {
-            //suche an der y-Achse
+            //suche an der x-Achse
             if (board[i, pieceField[1]].button == null)
                 highlightedFields.Add(GameObject.Find((i) + "x" + (pieceField[1])).GetComponent<Image>());
             else
@@ -120,7 +121,7 @@ public class boardScript : MonoBehaviour
 
         for (int i=1; i<= pieceField[1]; i++)
         {
-            //suche an der x-Achse
+            //suche an der y-Achse
             if (board[pieceField[0], pieceField[1] - i].button == null)
                 highlightedFields.Add(GameObject.Find((pieceField[0]) + "x" + (pieceField[1] - i)).GetComponent<Image>());
             else
@@ -129,7 +130,7 @@ public class boardScript : MonoBehaviour
 
         for (int i=pieceField[1] + 1; i< this.x; i++)
         {
-            //suche an der x-Achse
+            //suche an der y-Achse
             if (board[pieceField[0], i].button == null)
                 highlightedFields.Add(GameObject.Find((pieceField[0]) + "x" + (i)).GetComponent<Image>());
             else
@@ -141,7 +142,7 @@ public class boardScript : MonoBehaviour
     }
 
     public void HighlightFields(int[] pieceField)
-    {
+    {   // Highlight Possible Paths
         findPossiblePaths(pieceField);
 
         Image[] possibleFields = highlightedFields.ToArray();
@@ -153,7 +154,7 @@ public class boardScript : MonoBehaviour
     }
 
     public void LocateField(string pieceName)
-    {
+    {   //Locate Field of clicked Piece
         Button actButton = GameObject.Find(pieceName).GetComponent<Button>();
         float buttonX = 0;
         float buttonY = 0;
@@ -202,7 +203,7 @@ public class boardScript : MonoBehaviour
     }
 
     public void checkAttack(string lastSelection)
-    {
+    {   //check if attack on Piece
         Button actButton = GameObject.Find(lastSelection).GetComponent<Button>();
         Vector2 buttonPos = actButton.transform.position;
         Vector2 boardPos = new Vector2(-1,-1);
@@ -238,7 +239,7 @@ public class boardScript : MonoBehaviour
     }
 
     void checkNeighbors(Vector2 boardPos)
-    {
+    {   // Checking neighbors for removing
         int i = (int) boardPos.x;
         int j = (int)(boardPos.y);
         string attackButton = "wButton";
@@ -297,7 +298,7 @@ public class boardScript : MonoBehaviour
             }
         }
 
-        if ((j < (this.x - 2)  && board[i, j+1].button != null))
+        if ((j < (this.x - 2)  && board[i, j+1].button != null && board[i, j + 2].button != null))
         {
             if (board[i, j+2].button.Contains(attackButton))
             {
@@ -314,7 +315,7 @@ public class boardScript : MonoBehaviour
 
     void removeButton(Vector2 pos)
     {
-
+        // removes attacked Piece
         Button attackedButton = GameObject.Find(board[(int)pos.x, (int)pos.y].button).GetComponent<Button>();
         string buttonName = board[(int)pos.x, (int)pos.y].button;
         Button[] wButtons = wList.ToArray();
@@ -337,7 +338,7 @@ public class boardScript : MonoBehaviour
     }
 
     Vector2 getFieldPos(Vector2 buttonPos)
-    {
+    {   //returns new Position as Vector2
         for (int i = 0; i < this.y; i++)
         {
             for (int j = 0; j < this.x; j++)
@@ -346,7 +347,7 @@ public class boardScript : MonoBehaviour
                 {
 
                     return new Vector2(i, j);
-                    break;
+                    
                 }
             }
         }
@@ -354,7 +355,7 @@ public class boardScript : MonoBehaviour
 
     }
     public void moveButton(string lastSelection, Image clickedField)
-    {
+    {   // moves Piece
         Button actButton = GameObject.Find(lastSelection).GetComponent<Button>();
         string y = clickedField.name.Substring(0, 1);
         string x = clickedField.name.Substring(clickedField.name.IndexOf("x")+1, 1);
@@ -373,8 +374,10 @@ public class boardScript : MonoBehaviour
         int pos = Array.IndexOf(possibleFields, clickedField);
         if (pos > -1)
         {
-            Vector3 newPosition = new Vector3(board[newY, newX].coordX, board[newY, newX].coordY, 0);
+            Vector3 newPosition = new Vector3(board[newY, newX].coordX, board[newY, newX].coordY, actButton.transform.position.z);
             actButton.transform.position = newPosition;
+            //actButton.transform.
+
             for (int i = 0; i < this.y; i++)
             {
                 for (int j = 0; j < this.x; j++)
@@ -391,16 +394,49 @@ public class boardScript : MonoBehaviour
         CleanHighlights();
 
     }
-    public void onPieceClick()
-    {
+    public void onPieceClick() //outdated
+    {   
         string selectedButtonName = EventSystem.current.currentSelectedGameObject.name;
         Button actButton = GameObject.Find(selectedButtonName).GetComponent<Button>();
         LocateField(selectedButtonName);
     }
 
+    public string checkForWin()
+    {
+        Button[] bArray = bList.ToArray();
+        Button[] wArray = wList.ToArray();
 
+        if (bArray.Length<2)
+        {
+            winner = "white";
+            disablePieces();
+        }
+        else if (wArray.Length<2)
+        {
+            winner = "black";
+            disablePieces();
 
+        }
+        return winner;
+    }
 
+    public void disablePieces()
+    {
+        Button[] bArray = bList.ToArray();
+        Button[] wArray = wList.ToArray();
+        Button actButton;
+        for (int i = 0; i < bArray.Length; i++)
+        {
+            actButton = bArray[i];
+            actButton.interactable = false;
+        }
+        for (int i = 0; i < wArray.Length; i++)
+        {
+            actButton = wArray[i];
+
+            actButton.interactable = false;
+        }
+    }
     // Update is called once per frame
 
 }
