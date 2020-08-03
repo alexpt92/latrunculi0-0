@@ -20,6 +20,37 @@ public class boardScript : MonoBehaviour
     public bool moveAgain = false;
     public string winner = null;
 
+
+    #region runtime Creation
+    public GameObject fieldPrefab;
+
+    [HideInInspector]
+   // public Field[,] allFields;
+
+   /* public void Create()
+    {
+        board = new Field[this.x, this.y];
+
+        for (int y = 0; y < this.y; y++) {
+
+            for (int x = 0; x < this.x; x++)
+            {
+                //create the Field
+                GameObject newCell = Instantiate(fieldPrefab, transform);
+
+                //Position
+                RectTransform rectTransform = newCell.GetComponent<RectTransform>();
+                rectTransform.anchoredPosition = new Vector2((x * 100) + 50, (y * 100) + 50);
+
+                //Setup
+                board[x, y] = newCell.GetComponent<Field>();
+                board[x, y].Setup(new Vector2Int(x, y), this);
+            }
+        }
+    }
+   */
+    #endregion
+
     // Start is called before the first frame update
     public boardScript(int newX, int newY, float newXCoord, float newYCoord, Sprite newSprite, Sprite oldSprite)
     {   // Constructor Board
@@ -31,6 +62,7 @@ public class boardScript : MonoBehaviour
         bList = new List<Button>();
         m_Sprite = newSprite;
         o_Sprite = oldSprite;
+        //Create();
         initializeBoard();
         initializePieces();
 
@@ -82,6 +114,11 @@ public class boardScript : MonoBehaviour
                     board[i, j] = new Field(null, (i) + "x" + (j), GameObject.Find((i) + "x" + (j)).GetComponent<Image>().transform.position.y, GameObject.Find((i) + "x" + (j)).GetComponent<Image>().transform.position.x);
             }
         }
+    }
+  
+    public void drawBoard()
+    {
+
     }
 
     public void CleanHighlights()
@@ -394,13 +431,13 @@ public class boardScript : MonoBehaviour
         CleanHighlights();
 
     }
-    public void onPieceClick() //outdated
+   /* public void onPieceClick() //outdated
     {   
         string selectedButtonName = EventSystem.current.currentSelectedGameObject.name;
         Button actButton = GameObject.Find(selectedButtonName).GetComponent<Button>();
         LocateField(selectedButtonName);
     }
-
+   */
     public string checkForWin()
     {
         Button[] bArray = bList.ToArray();

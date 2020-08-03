@@ -11087,7 +11087,7 @@ Camera:
   far clip plane: 10000
   field of view: 60
   orthographic: 0
-  orthographic size: 10
+  orthographic size: 500
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -11140,6 +11140,7 @@ MonoBehaviour:
   o_Sprite: {fileID: 0}
   moveAgain: 0
   winner: 
+  fieldPrefab: {fileID: 0}
 --- !u!114 &1076881323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11193,6 +11194,7 @@ MonoBehaviour:
   o_Sprite: {fileID: 0}
   moveAgain: 0
   winner: 
+  fieldPrefab: {fileID: 0}
 --- !u!114 &1076881326
 MonoBehaviour:
   m_ObjectHideFlags: 0
