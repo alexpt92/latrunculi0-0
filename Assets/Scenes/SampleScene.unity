@@ -149,6 +149,7 @@ GameObject:
   m_Component:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
+  - component: {fileID: 519420033}
   - component: {fileID: 519420029}
   - component: {fileID: 519420030}
   m_Layer: 0
@@ -227,7 +228,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 500
+  orthographic size: 25
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -258,6 +259,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &519420033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64165dd0922d0484890d94c6d39a4977, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wireColor: {r: 1, g: 1, b: 1, a: 1}
+  UnitsSize: 50
+  constraint: 1
+  camera: {fileID: 519420031}
 --- !u!1001 &533153001
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -424,12 +441,12 @@ PrefabInstance:
     - target: {fileID: 7469938788435218676, guid: 426433a79636b3745a39b977854a2e4d,
         type: 3}
       propertyPath: sizeX
-      value: 9
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7469938788435218676, guid: 426433a79636b3745a39b977854a2e4d,
         type: 3}
       propertyPath: sizeY
-      value: 9
+      value: 12
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 426433a79636b3745a39b977854a2e4d, type: 3}
@@ -733,6 +750,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1643217468
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1643217469}
+  m_Layer: 0
+  m_Name: Player2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1643217469
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1643217468}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2339.6035, y: -861.23694, z: -3767.734}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1717000139
 GameObject:
   m_ObjectHideFlags: 0
@@ -833,6 +880,36 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!1 &1817558588
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1817558589}
+  m_Layer: 0
+  m_Name: Player1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1817558589
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1817558588}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2339.6035, y: -861.23694, z: -3767.734}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &6423886415244608802
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -850,6 +927,16 @@ PrefabInstance:
       propertyPath: mPieceManager
       value: 
       objectReference: {fileID: 384866106}
+    - target: {fileID: 1607702622103916803, guid: 8b3d8d6be5f700d4c9bdab1e49ee5015,
+        type: 3}
+      propertyPath: sizeX
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1607702622103916803, guid: 8b3d8d6be5f700d4c9bdab1e49ee5015,
+        type: 3}
+      propertyPath: sizeY
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 2575828050007304541, guid: 8b3d8d6be5f700d4c9bdab1e49ee5015,
         type: 3}
       propertyPath: m_LocalPosition.x

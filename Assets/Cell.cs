@@ -9,6 +9,7 @@ public class Cell : MonoBehaviour
     public Image mOutlineImage;
     public Sprite n_Sprite;
     public Sprite o_Sprite;
+    public CellState state;
 
     [HideInInspector]
     public Vector2Int mBoardPosition = Vector2Int.zero;
