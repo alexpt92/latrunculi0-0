@@ -26,6 +26,7 @@ public class Board : MonoBehaviour
     [HideInInspector]
     public Cell[,] mAllCells;// = new Cell[sizeX, sizeY];
     protected int player;
+    private bool gameOver = false;
 
     public virtual Board MakeMove(Move m)
     {
@@ -51,7 +52,6 @@ public class Board : MonoBehaviour
         //Board b = new Board(copy, nextPlayer); 
         //return b;
         return newBoard;
-      //  return newBoard();
     }
 
     public bool IsGameOver()
@@ -172,7 +172,7 @@ public void Create()
                 rectTransform.anchoredPosition = new Vector2((x * 80), (y * 80));
 
                 //Setup
-
+                newCell.name = "CellX" + x + "Y" + y;
                 mAllCells[x, y] = newCell.GetComponent<Cell>();
                 mAllCells[x, y].Setup(new Vector2Int(x, y), this);
             }
@@ -203,7 +203,12 @@ public void Create()
                 return CellState.Enemy;
         }
 
+        //if (mAllCells[targetX, targetY].mCurrentPiece != null && mAllCells[targetX, targetY].mCurrentPiece.name == checkingPiece.name)
+          //  return CellState.Free;
+          if (targetCell.mCurrentPiece == null)
         return CellState.Free;
+
+        return CellState.None;
 
 
     }

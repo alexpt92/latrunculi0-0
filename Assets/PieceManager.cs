@@ -25,10 +25,21 @@ public class PieceManager : MonoBehaviour
         return mBPieces;
     }
 
+    public List<Piece> getWPieces()
+    {
+        return mWPieces;
+    }
+
     public Board getBoard()
     {
         return board;
     }
+
+    public void setBoard(Board newBoard)
+    {
+        board = newBoard;
+    }
+
     public void Setup(Board board2, string aiType)
     {
         this.board = board2;
@@ -50,21 +61,6 @@ public class PieceManager : MonoBehaviour
         //Switch Sides
         SwitchSides(Color.black);
 
-    }
-
-
-    public Dictionary<Piece, List<Move>> getPossibleActions(string State)
-    {
-        Dictionary<Piece, List<Move>> tempDic = new Dictionary<Piece, List<Move>>();
-        NTree<Move> test = new NTree<Move>(null);
-    //    TreeVisitor<Move> iwas = new TreeVisitor<Move>();
-        //test.AddChild(mWPieces[0].getPossibleActions());
-
-        for (int i = 0; i<mWPieces.ToArray().Length-1; i++)
-        {
-            tempDic.Add(mWPieces[i], mWPieces[i].getPossibleActions());
-        }
-        return null;
     }
 
 
@@ -98,7 +94,7 @@ public class PieceManager : MonoBehaviour
         }
         return newPieces;
 
-        }
+    }
     
     private void PlacePieces(int initRow, List<Piece> pieces, Board board)
     {
@@ -137,13 +133,15 @@ public class PieceManager : MonoBehaviour
         int wDeathCounter = 0;
         int bDeathCounter = 0;
 
-        for (int i = 0; i < wPieces.Length - 1; i++)
+        for (int i = 0; i < wPieces.Length; i++)
         {
             if (wPieces[i].isDead())
             {
                 wDeathCounter++;
                 if (wDeathCounter == wPieces.Length - 1)
                 {
+                    Debug.Log("Black wins.");
+
                     ResetPieces();
                     SwitchSides(Color.black);
                 }
@@ -153,21 +151,14 @@ public class PieceManager : MonoBehaviour
                 bDeathCounter++;
                 if (bDeathCounter == bPieces.Length - 1)
                 {
+                    Debug.Log("White wins.");
+
                     ResetPieces();
                     SwitchSides(Color.black);
                 }
             }
 
         }
-
-        /*if (moveAgain)
-        {
-            if (!(color == Color.black))
-            {
-                color = Color.white;
-            }
-
-        }*/
 
         bool isBlackTurn = color == Color.white ? true : false;
         if (isAIActive && isBlackTurn)
@@ -179,6 +170,10 @@ public class PieceManager : MonoBehaviour
             if (referenceScript.getCurrentPlayer() == 1)
             {
                 DisableAllPieces();
+            }
+            else if (referenceScript.getCurrentPlayer() == 2)
+            {
+                referenceScript.MoveAgain(2);
             }
 
         }
@@ -197,9 +192,10 @@ public class PieceManager : MonoBehaviour
         GameManager referenceScript;
         referenceObject = GameObject.FindGameObjectWithTag("GameManager");
         referenceScript = referenceObject.GetComponent<GameManager>();
-        if (moveAgain == false)
-            referenceScript.nextPlayer();
-        Debug.Log(referenceScript.getCurrentPlayer());
+        //if (moveAgain == false)
+            
+        referenceScript.nextPlayer();
+        //Debug.Log(referenceScript.getCurrentPlayer());
 
     }
 
@@ -231,5 +227,27 @@ public class PieceManager : MonoBehaviour
         return new Cell();
     }
 
-
+    public void removePiece (Piece piece)
+    {
+        if (piece.mColor == Color.white)
+        {
+            for (int i = 0; i < mWPieces.ToArray().Length; i++)
+            {
+                if (mWPieces.ToArray()[i].name == piece.name)
+                {
+                    mWPieces.Remove(piece);
+                }
+            }
+        }
+        if (piece.mColor == Color.black)
+        {
+            for (int i = 0; i < mBPieces.ToArray().Length; i++)
+            {
+                if (mBPieces.ToArray()[i].name == piece.name)
+                {
+                    mBPieces.Remove(piece);
+                }
+            }
+        }
+    }
 }

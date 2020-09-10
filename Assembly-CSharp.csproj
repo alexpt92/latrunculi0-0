@@ -66,16 +66,12 @@
     <Compile Include="Assets\AIManager.cs" />
     <Compile Include="Assets\Board.cs" />
     <Compile Include="Assets\BoardAI.cs" />
-    <Compile Include="Assets\BoardDraughts.cs" />
     <Compile Include="Assets\Cell.cs" />
     <Compile Include="Assets\GameManager.cs" />
     <Compile Include="Assets\Move.cs" />
-    <Compile Include="Assets\MoveDraughts.cs" />
     <Compile Include="Assets\MovementController.cs" />
     <Compile Include="Assets\NTree.cs" />
-    <Compile Include="Assets\NewBehaviourScript.cs" />
     <Compile Include="Assets\Piece.cs" />
-    <Compile Include="Assets\PieceDraught.cs" />
     <Compile Include="Assets\PieceManager.cs" />
     <Compile Include="Assets\SimplePiece.cs" />
     <Compile Include="Assets\ViewportHandler.cs" />

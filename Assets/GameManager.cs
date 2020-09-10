@@ -18,11 +18,11 @@ public class GameManager : MonoBehaviour
 
     private bool gameRunning = false;
     // private int maxRounds = 10;
-  //  private int currentRound = 1;
+  //  private int currentRound = 1; ?
     private int maxPlayers = 2;
     protected int currentPlayer;
     BoardAI mAI;
-    // string winner = null;
+    string winner = null;
 
 
     private bool moveAgain;
@@ -32,7 +32,6 @@ public class GameManager : MonoBehaviour
     {
         //Create Board
 
-        Debug.Log("iwas");
         mBoard.Create();
 
         //Create Pieces
@@ -44,8 +43,6 @@ public class GameManager : MonoBehaviour
         Camera.main.gameObject.SetActive(true);
         
      //   Camera.main.rect = new Rect(0, 0, 900, 900);
-
-
         GameObject.FindGameObjectWithTag("BoardCanvas").transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, 125));
         GameObject.FindGameObjectWithTag("Pieces").transform.position = GameObject.FindGameObjectWithTag("BoardCanvas").transform.position;
 
@@ -56,55 +53,89 @@ public class GameManager : MonoBehaviour
     {
         if (currentPlayer == 2)
         {
-            Move m = new Move();
            // BoardAI.Minimax(mBoard, currentPlayer, 2, 0, ref m);
-           // currentPlayer = 1;
         }
         if (mBoard.GetCurrentPlayer() == 2)
         {
-            //currentPlayer = 2;
+
         }
     }
 
     public void nextPlayer()
     {
-        if (currentPlayer == null)
-            currentPlayer = 1;
-        else if (currentPlayer == 1)
+        if (GameOver() != null)
         {
-            currentPlayer = 2;
-            Move m = new Move();
-            float iwas;
-            List<Move> moves = new List<Move>();
-            for (int i = 0; i < mPieceManager.getBPieces().ToArray().Length - 1; i++)
-            {
-                mPieceManager.getBPieces()[i].getPossibleActions();
-                moves.AddRange(mPieceManager.getBPieces()[i].moves);
-            }
-            //iwas = BoardAI.Minimax(mBoard, currentPlayer, 2, 1, mPieceManager.getBPieces()[2], ref m);
-
-            //!!!!!!!!!!!!!!TODO
-            // m.mPiece.PlaceByAI(mBoard.mAllCells[m.x, m.y].transform.localPosition);
-            Random rnd = new Random();
-           // int r = rnd.Next(moves.Count);
-            int r = Random.Range(0, moves.Count);
-            m = moves.ToArray()[r];
-
-            
-            
-            m.mPiece.PlaceByAI(m.mPiece.getTargetCell());//.transform.localPosition);// mBoard.mAllCells[m.x, m.y].transform.localPosition);
-            //m.mPiece.
-            // mPieceManager.getBPieces()[2].Place(mBoard.mAllCells[4,4]);
-            mPieceManager.SwitchSides(Color.black);
-
+            Debug.Log(GameOver() + "wins.");
+            mPieceManager.ResetPieces();
+            nextPlayer();
         }
         else
-            currentPlayer = 1;
-    }
+        {
+            if (currentPlayer == null)
+                currentPlayer = 1;
+            else if (currentPlayer == 1)
+            {
+                currentPlayer = 2;
+                Move m = new Move();
+                float iwas;
+                List<Move> moves = new List<Move>();
+                mPieceManager.setBoard(mBoard);
 
+
+                for (int i = 0; i < mPieceManager.getBPieces().ToArray().Length; i++)
+                {
+                    List<Piece> list = mPieceManager.getBPieces();
+                    mPieceManager.getBPieces()[i].getPossibleActions();
+                    bool checkDead = list[i].isDead();
+                    if (!mPieceManager.getBPieces()[i].isDead())
+                        moves.AddRange(mPieceManager.getBPieces()[i].moves);
+                }
+
+                //!!!!!!!!!!!!!!TODO
+
+                // m.mPiece.PlaceByAI(mBoard.mAllCells[m.x, m.y].transform.localPosition);
+                Random rnd = new Random();
+                int r = Random.Range(0, moves.Count);
+                m = moves.ToArray()[r];
+
+                Debug.Log("Next Move: " + m.mPiece.name);
+                Debug.Log("Next Move: CurrentCell: " + m.mPiece.getCurrentCell().name);
+                Debug.Log("Next Move: TargetCell: " + m.mPiece.getTargetCell().name);
+
+                List<Piece> blist = mPieceManager.getBPieces();
+                for (int i = 0; i < blist.ToArray().Length; i++)
+                {
+                    if (blist.ToArray()[i].name == m.mPiece.name)
+                    {
+                        blist.ToArray()[i].PlaceByAI(m.mPiece.getTargetCell());
+                        break;
+                    }
+                }
+            }
+            else
+                currentPlayer = 1;
+        }
+    }
     public int getCurrentPlayer ()
     {
         return currentPlayer;
+    }
+
+    public void MoveAgain(int currentPlayer)
+    {
+        if (currentPlayer == 2)
+            this.currentPlayer = 1;
+        else if (currentPlayer == 1)
+            this.currentPlayer = 2;
+    }
+
+    public string GameOver()
+    {
+        if (mPieceManager.getBPieces().ToArray().Length < 2)
+            return "Player 1";
+        else if (mPieceManager.getWPieces().ToArray().Length < 2)
+            return "Player 2";
+        else return null;
     }
 
 }

@@ -44,6 +44,8 @@ public class Cell : MonoBehaviour
     {
         if (mCurrentPiece != null)
         {
+            Debug.Log(mCurrentPiece.name + " was killed on " + this.name);
+
             mCurrentPiece.Kill();
         }
     }
