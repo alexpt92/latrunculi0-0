@@ -49,6 +49,26 @@ SpriteMask:
   m_BackSortingOrder: 0
   m_IsCustomRangeActive: 0
   m_SpriteSortPoint: 1
+--- !u!114 &7316747009758893038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3040800347385191400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78c2836fd06de944abeab38b87840379, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mOutlineImage: {fileID: 0}
+  n_Sprite: {fileID: 0}
+  o_Sprite: {fileID: 0}
+  state: 0
+  mBoardPosition: {x: 0, y: 0}
+  mBoard: {fileID: 0}
+  mRectTransform: {fileID: 0}
+  mCurrentPiece: {fileID: 0}
 --- !u!1001 &2402215539779622872
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -245,6 +265,23 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 686e33edc26845e4eb33ff3f01bdfb11,
         type: 3}
+    - target: {fileID: 731057929322349483, guid: 342225eba9647e0409fb06ecc0bfce8c,
+        type: 3}
+      propertyPath: n_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7e8941f7415898c4ca2091aff28f9b6e,
+        type: 3}
+    - target: {fileID: 731057929322349483, guid: 342225eba9647e0409fb06ecc0bfce8c,
+        type: 3}
+      propertyPath: o_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 686e33edc26845e4eb33ff3f01bdfb11,
+        type: 3}
+    - target: {fileID: 731057929322349483, guid: 342225eba9647e0409fb06ecc0bfce8c,
+        type: 3}
+      propertyPath: mOutlineImage
+      value: 
+      objectReference: {fileID: 826803871695039677}
     - target: {fileID: 1089717151976607817, guid: 342225eba9647e0409fb06ecc0bfce8c,
         type: 3}
       propertyPath: m_LocalPosition.x

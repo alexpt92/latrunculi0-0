@@ -2,37 +2,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Move : MonoBehaviour
+public class Move
 {
 
     //public string mMove;
     //public Vector2 mTargetLoc;
-    public int mScore;
-    public Piece mPiece;
+    public float mScore;
+    //public Piece mPiece;
+    public string mPieceName;
     //_______________________________________
 
 
-    //public PieceDraught piece;
-    public int x;
+    public int x; // x & y as TargetLocation
     public int y;
     public bool success;
     public bool threaten;
     public bool hide; //??
     public bool attacked;
     public bool attacked2;
+    public bool moveAgain;
+
     public int removeX;
     public int removeY;
-    public int player;
+    public int removeX2;
+    public int removeY2;
 
-     /* public Move(int score, Piece nPiece, int x, int y, int nowX, int nowY)
-      {
-         // this.mMove = move;
-          //this.mTargetLoc = targetLoc;
-          this.mScore = score;
-          this.mPiece = nPiece;
-        this.x = x;
-        this.y = y;
-        this.removeX = nowX;
-        this.removeY = nowY;
-      }*/
+    public int currentX; // x & y as CurrentLocation
+    public int currentY;
+    public int player; //Player
+
+    public string attackedPiece;
+    public string attackedPiece2;
+
 }

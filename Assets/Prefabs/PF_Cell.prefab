@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1089717151976607817}
   - component: {fileID: 2661383541362624090}
   - component: {fileID: 363000636551405271}
+  - component: {fileID: 731057929322349483}
   - component: {fileID: 558456537598824631}
   - component: {fileID: 6146366632159341318}
   - component: {fileID: -7599216158999935581}
@@ -77,6 +78,26 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &731057929322349483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5089321714970502922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78c2836fd06de944abeab38b87840379, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mOutlineImage: {fileID: 0}
+  n_Sprite: {fileID: 0}
+  o_Sprite: {fileID: 0}
+  state: 0
+  mBoardPosition: {x: 0, y: 0}
+  mBoard: {fileID: 0}
+  mRectTransform: {fileID: 0}
+  mCurrentPiece: {fileID: 0}
 --- !u!114 &558456537598824631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90,6 +111,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mOutlineImage: {fileID: 0}
+  n_Sprite: {fileID: 0}
+  o_Sprite: {fileID: 0}
+  state: 0
   mBoardPosition: {x: 0, y: 0}
   mBoard: {fileID: 0}
   mRectTransform: {fileID: 0}

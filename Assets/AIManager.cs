@@ -24,54 +24,112 @@ public class AIManager : MonoBehaviour
         }
     }
 
-    public static float Minimax(
-            Board board,
+
+
+public static float Minimax(
+            BoardDraught board,
             int player,
             int maxDepth,
             int currentDepth,
-            Piece piece,
 
             ref Move bestMove)
     {
         if (board.IsGameOver() || currentDepth == maxDepth)
-            return board.Evaluate(player);
-
+        {
+            board.SetCurrentMove(bestMove);
+            return board.Evaluate(player);//board.Evaluate(player);
+        }
 
         bestMove = null;
         float bestScore = Mathf.Infinity;
         if (board.GetCurrentPlayer() == player)
             bestScore = Mathf.NegativeInfinity;
-        /* Move[][] allMoves = new Move[board.sizeX][];
-         for (int i = 0; i < board.sizeX; i++)
-             allMoves[i] = board.GetMoves();*/
-        foreach (Move m in board.GetMoves(piece))
+         List<Move> allMoves = new List<Move>();
+        int nextPlayer = 0;
+        
+        if (player == 2)
         {
-            Board b = board.MakeMove(m);
+            allMoves = board.GetMoves(player);
+            nextPlayer = 1;
+        }
+        else if (player == 1)
+        {
+            allMoves = board.GetMoves(player);
+            nextPlayer = 2;
+        }
+        BoardDraught bTest = board;
+        Move currentMove;
+
+        foreach (Move m in allMoves)//board.GetMoves())
+        {
+            bTest = board.MakeMove(m);
             float currentScore;
-            Move currentMove = null;//m; ??
-            currentScore = Minimax(b, player, maxDepth, currentDepth + 1, piece, ref currentMove);
+            //Evaluate Moves
+            currentMove = m;// null;//= m;//m; ??
+            if (m.attacked)
+            {
+                if (nextPlayer == 2)
+                    nextPlayer = 1;
+                else
+                    nextPlayer = 2;
+            } 
+            currentScore = Minimax(bTest, nextPlayer, maxDepth, currentDepth + 1, ref currentMove);
+            board.SetCurrentMove(m);
+            float newScore = board.Evaluate(player);
+            //Evaluierung aktueller Move
+            
+            //currentScore += newScore;
             if (board.GetCurrentPlayer() == player)
             {
+                currentScore += newScore;
+
                 if (currentScore > bestScore)
                 {
-                    if (currentScore > bestScore)
-                    {
-                        bestScore = currentScore;
-                        bestMove = currentMove;
-                    }
-
-                }
-                else
-                {
-                    if (currentScore < bestScore)
-                    {
-                        bestScore = currentScore;
-                        bestMove = currentMove;
-                    }
+                    bestScore = currentScore;
+                    bestMove = m;
+                    m.mScore = bestScore;
                 }
             }
+            else
+            {
+                currentScore -= newScore;
+
+                if (currentScore < bestScore)
+                {
+                    bestScore = currentScore;
+                    bestMove = m;
+                    m.mScore = bestScore;
+                }
+            }
+            bTest.StepBack();
         }
+     //   bestMove.mScore = bestScore;
         return bestScore;
     }
-
 }
+
+
+
+/*  for (int i = 0; i < pieceManager.getBPieces().ToArray().Length; i++)
+            {
+                List<Piece> list = pieceManager.getBPieces();
+                pieceManager.getBPieces()[i].getPossibleActions();
+                bool checkDead = list[i].isDead();
+                if (!pieceManager.getBPieces()[i].isDead())
+                    allMoves.AddRange(pieceManager.getBPieces()[i].moves); //Searching for all Possible Moves
+            }
+        }
+        else if (player == 1)
+        {
+            for (int i = 0; i < pieceManager.getBPieces().ToArray().Length; i++)
+            {
+                nextPlayer = 2;
+
+                List<Piece> list = pieceManager.getWPieces();
+                pieceManager.getWPieces()[i].getPossibleActions();
+                bool checkDead = list[i].isDead();
+                if (!pieceManager.getWPieces()[i].isDead())
+                    allMoves.AddRange(pieceManager.getWPieces()[i].moves); //Searching for all Possible Moves
+            }
+        }
+*/

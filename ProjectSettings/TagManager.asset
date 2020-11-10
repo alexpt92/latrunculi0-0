@@ -8,6 +8,7 @@ TagManager:
   - Pieces
   - parentCanvas
   - GameManager
+  - menuCanvas
   layers:
   - Default
   - TransparentFX
@@ -19,7 +20,7 @@ TagManager:
   - 
   - Board
   - Pieces
-  - 
+  - Menu
   - 
   - 
   - 

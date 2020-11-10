@@ -15,8 +15,7 @@ public class PieceManager : MonoBehaviour
     private List<Piece> mBPieces = null;
     private List<Piece> mAllPieces = null;
     private Board board;
-    protected Dictionary<Piece, List<Move>> mWMoveLists = null;
-    protected Dictionary<Piece, List<Move>> mBMoveLists = null;
+
 
    // private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
@@ -33,6 +32,16 @@ public class PieceManager : MonoBehaviour
     public Board getBoard()
     {
         return board;
+    }
+    public string[,] getBoardDraught2()
+    {
+
+        return board.getDraughtAsStrings();
+    }
+    public BoardDraught getBoardDraught()
+    {
+        
+        return board.getDraught();
     }
 
     public void setBoard(Board newBoard)
@@ -67,7 +76,12 @@ public class PieceManager : MonoBehaviour
     private List<Piece> CreatePieces(Color teamColor, Color32 spriteColor, Board board)
     {
         List<Piece> newPieces = new List<Piece>();
-
+        float height = Screen.height;
+        float width = Screen.width;
+        float midHeight = height / 2;
+        float midWidth = width / 2;
+        float sizePieceY = height / board.sizeY;
+        float sizePieceX = width / board.sizeX;
         for (int i = 0; i < board.sizeX; i++)
         {
             //new Object
@@ -83,7 +97,11 @@ public class PieceManager : MonoBehaviour
             //Scale&Position
             newPieceObject.transform.localScale = new Vector3(1, 1, 1);
             newPieceObject.transform.localRotation = Quaternion.identity;
+            RectTransform rectTransform = newPieceObject.GetComponent<RectTransform>();
+          //  float height = Screen.height / (board.sizeY);
 
+            rectTransform.sizeDelta = new Vector2(sizePieceY+(sizePieceX -sizePieceY), sizePieceY);
+            rectTransform.anchoredPosition = new Vector2((i * sizePieceX), (i * sizePieceY));
 
             //Store piece
             Piece newPiece = (Piece)newPieceObject.AddComponent(typeof(SimplePiece));
@@ -101,6 +119,8 @@ public class PieceManager : MonoBehaviour
         for (int i = 0; i<board.sizeX; i++)
         {
             pieces[i].Place(board.mAllCells[i, initRow]);
+            board.simpleAllCells[i, initRow] = pieces[i].name;
+
         }
     }
 
@@ -125,6 +145,21 @@ public class PieceManager : MonoBehaviour
         foreach (Piece piece in mAllPieces)
             piece.enabled = true;
     }
+    
+    private bool GameOver(Color color)
+    {
+        //string[,] boarddraught = board.getDraughtAsStrings();
+        //GameObject.AddComponent<BoardDraught>();        
+       // BoardDraught b = board; 
+       // b.Create();
+       // b.simpleAllCells = board.getDraughtAsStrings();
+        //b.simpleAllCells = boarddraught;
+        //= new BoardDraught(boarddraught, 1, board.sizeX, board.sizeY);
+        //BoardDraught b2 = new BoardDraught(boarddraught, 2, board.sizeX, board.sizeY);
+        board.simpleAllCells = board.getDraughtAsStrings();
+        //int player = board.GetCurrentPlayer();
+        return (board.IsGameOver());
+    }
 
     public void SwitchSides(Color color)
     {
@@ -132,32 +167,51 @@ public class PieceManager : MonoBehaviour
         Piece[] bPieces = mBPieces.ToArray();
         int wDeathCounter = 0;
         int bDeathCounter = 0;
-
-        for (int i = 0; i < wPieces.Length; i++)
+        if (GameOver(color))
         {
-            if (wPieces[i].isDead())
+            if (color == Color.black)
+            {       if (moveAgain)
+                    Debug.Log("White wins. No Moves left.");
+            else
+                Debug.Log("Black wins. No Moves left");
+           
+            }
+            else
             {
-                wDeathCounter++;
-                if (wDeathCounter == wPieces.Length - 1)
-                {
-                    Debug.Log("Black wins.");
+                    if (moveAgain)
+                    Debug.Log("Black wins. No Moves left");
+            else
+                Debug.Log("White wins. No Moves left.");
 
-                    ResetPieces();
-                    SwitchSides(Color.black);
+            }
+            ResetPieces();
+        }
+        else {
+            for (int i = 0; i < wPieces.Length; i++)
+            {
+                if (wPieces[i].isDead())
+                {
+                    wDeathCounter++;
+                    if (wDeathCounter == wPieces.Length - 1)
+                    {
+                        Debug.Log("Black wins.");
+
+                        ResetPieces();
+                        //  SwitchSides(Color.black);
+                    }
+                }
+                if (bPieces[i].isDead())
+                {
+                    bDeathCounter++;
+                    if (bDeathCounter == bPieces.Length - 1)
+                    {
+                        Debug.Log("White wins.");
+
+                        ResetPieces();
+                        // SwitchSides(Color.black);
+                    }
                 }
             }
-            if (bPieces[i].isDead())
-            {
-                bDeathCounter++;
-                if (bDeathCounter == bPieces.Length - 1)
-                {
-                    Debug.Log("White wins.");
-
-                    ResetPieces();
-                    SwitchSides(Color.black);
-                }
-            }
-
         }
 
         bool isBlackTurn = color == Color.white ? true : false;
@@ -173,7 +227,7 @@ public class PieceManager : MonoBehaviour
             }
             else if (referenceScript.getCurrentPlayer() == 2)
             {
-                referenceScript.MoveAgain(2);
+               // referenceScript.MoveAgain(2);
             }
 
         }
@@ -183,7 +237,19 @@ public class PieceManager : MonoBehaviour
             SetInteractive(mBPieces, isBlackTurn);
         }
         if (!moveAgain)
+        {
             NextPlayer();
+            getBoard().NextPlayer();
+        }
+        else if (moveAgain)
+        {
+            moveAgain = false;
+            GameObject referenceObject;
+            GameManager referenceScript;
+            referenceObject = GameObject.FindGameObjectWithTag("GameManager");
+            referenceScript = referenceObject.GetComponent<GameManager>();
+            referenceScript.MoveAgain();
+        }
     }
 
     private void NextPlayer()
@@ -203,7 +269,8 @@ public class PieceManager : MonoBehaviour
     {
         //Reset White
         foreach (Piece piece in mWPieces)
-            piece.Reset();
+
+        piece.Reset();
 
         foreach(Piece piece in mBPieces)
         {

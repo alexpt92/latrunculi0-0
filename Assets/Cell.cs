@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+//[System.Serializable]
 public class Cell : MonoBehaviour
 {
 
@@ -21,7 +23,7 @@ public class Cell : MonoBehaviour
     public Piece mCurrentPiece = null;
 
 
-    public void Setup(Vector2Int newBoardPosition, Board newBoard)
+    public virtual void Setup(Vector2Int newBoardPosition, Board newBoard)
     {
         mBoardPosition = newBoardPosition;
         mBoard = newBoard;
@@ -30,21 +32,37 @@ public class Cell : MonoBehaviour
     }
 
 
-    public void highlight ()
+    public virtual void highlight ()
     {
         this.GetComponent<Image>().sprite = n_Sprite;
     }
 
-    public void removeHighlight()
+    public virtual void removeHighlight()
     {
         this.GetComponent<Image>().sprite = o_Sprite;
     }
 
-    public void RemovePiece()
+    public virtual Vector2 getBoardPosition()
+    {
+        for (int i = 0; i < mBoard.sizeX; i++)
+        {
+            for (int j = 0; j < mBoard.sizeY; j++)
+            {
+                if (mBoard.mAllCells[i, j] == this)
+                {
+                    return new Vector2(i, j);
+                }
+            }
+        }
+        return new Vector2(-1 , -1);
+    }
+
+    public virtual void RemovePiece()
     {
         if (mCurrentPiece != null)
         {
             Debug.Log(mCurrentPiece.name + " was killed on " + this.name);
+            mBoard.simpleAllCells[(int)mBoardPosition.x, (int)mBoardPosition.y] = "empty";
 
             mCurrentPiece.Kill();
         }

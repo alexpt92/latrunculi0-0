@@ -12,20 +12,21 @@ public class Piece : EventTrigger
     public Sprite n_Sprite;
     public Sprite o_Sprite;
 
-    protected Cell mOriginalCell = null;
-    protected Cell mCurrentCell = null;
+    protected CellDraughtV mOriginalCell = null;
+    protected CellDraughtV mCurrentCell = null;
 
-    protected RectTransform mRectTransform = null;
     protected PieceManager mPieceManager;
 
-    protected Cell mTargetCell = null;
+    protected CellDraughtV mTargetCell = null;
     protected List<Move> mMoves = new List<Move>();
    // private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
 
     protected Vector3Int mMovement;
-    protected List<Cell> mHighlightedCells = new List<Cell>();
+    protected List<CellDraughtV> mHighlightedCells = new List<CellDraughtV>();
     public List<Move> moves = new List<Move>();
+
+    private RectTransform mRectTransform = null;
 
 
 
@@ -41,18 +42,18 @@ public class Piece : EventTrigger
         mMovement = movement;
     }
 
-    public Move[] GetMoveArray ()
+    public virtual Move[] GetMoveArray ()
     {
         return this.mPieceManager.getBoard().GetMoves(this);
     }
 
-    public void GetMovesMan(ref Piece[,] board)
+    public virtual void GetMovesMan(ref Piece[,] board)
     {
         CheckPathing(true);
     }
 
 
-    public List<Move> getPossibleActions()
+    public virtual List<Move> getPossibleActions()
     {
         if (isDead())
             return null;
@@ -68,16 +69,18 @@ public class Piece : EventTrigger
                     FindMoves();
                 }
             }
-            return mMoves;
+            return moves;
         }
     }
 
 
-    public void Place(Cell newCell)
+    public virtual void Place(CellDraughtV newCell)
     {
-        
+
 
         //Cell
+        gameObject.SetActive(true);
+
         mCurrentCell = newCell;
         mOriginalCell = newCell;
         mCurrentCell.mCurrentPiece = this;
@@ -85,10 +88,10 @@ public class Piece : EventTrigger
         //Object
         transform.localPosition = mCurrentCell.transform.localPosition;
         
-        gameObject.SetActive(true);
+        //gameObject.SetActive(true);
     }
 
-    public void PlaceByAI(Cell newCell)
+    public virtual void PlaceByAI(CellDraughtV newCell)
     {
         Color color = mColor;
         if (this.name == null)
@@ -103,54 +106,50 @@ public class Piece : EventTrigger
         Move();
     }
 
-    public void Reset()
+
+    public virtual void MakeMove(CellDraughtV newCell)
     {
-        Kill();
+        Color color = mColor;
+        if (this.name == null)
+            Debug.Log("this.name is null");
+        if (mCurrentCell.name == null)
+            Debug.Log("mCurrentCell.name is null");
+        if (newCell.name == null)
+            Debug.Log("newCell.name is null");
+        Debug.Log("DRAUGHT: " + this.name + " bewegt sich von " + mCurrentCell.name + " nach " + newCell.name);
 
-        Place(mOriginalCell);
-
+        mTargetCell = newCell;
+        MakeMove();
     }
 
-    public virtual void Kill()
+
+    public virtual void MakeMove()
     {
-        //Clear Cell
-        mCurrentCell.mCurrentPiece = null;
-        
-
-        //Remove Piece
-        gameObject.SetActive(false);
-
-    }
-
-    #region movement
-
-
-
-    protected virtual void Move()
-    {
-        // if enemy piece -> back to currentCell
         if (mTargetCell.mCurrentPiece != null)
         {
-            transform.position = mCurrentCell.transform.position;
+          //  transform.position = mCurrentCell.transform.position;
             mTargetCell = null;
 
             return;
         }
 
         Color color = mColor;
-        
+
         //check neighbors for Enemys & Allys
 
         Cell[] attackedCells = checkNeighbor();
-        if (attackedCells != null) {
+        if (attackedCells != null)
+        {
             for (int i = 0; i <= attackedCells.Length - 1; i++)
             {
                 if (attackedCells[i] != null)
                 {
                     attackedCells[i].RemovePiece();
+                    mPieceManager.moveAgain = true;
                 }
             }
         }
+
         if (attackedCells != null)
         {
             if (color == Color.white)
@@ -164,8 +163,86 @@ public class Piece : EventTrigger
         mCurrentCell = mTargetCell;
         mCurrentCell.mCurrentPiece = this;
 
+      //  transform.position = mCurrentCell.transform.position;
+        mTargetCell = null;
+      //  mPieceManager.SwitchSides(color);
+    }
+
+    public virtual void Reset()
+    {
+        Kill();
+
+        Place(mOriginalCell);
+
+    }
+
+    public virtual void KillDraught()
+    {
+        mCurrentCell.mCurrentPiece = null;
+
+    }
+
+    public virtual void Kill()
+    {
+        //Clear Cell
+        mCurrentCell.mCurrentPiece = null;
+        //mPieceManager.moveAgain = true; //NOT HERE
+
+        //Remove Piece
+        gameObject.SetActive(false);
+
+    }
+
+    #region movement
+
+
+
+    protected virtual void Move()
+    {
+        // if enemy piece -> back to currentCell
+        //if (mTargetCell.mCurrentPiece != null)
+      //  {
+          //  transform.position = mCurrentCell.transform.position;
+          //  mTargetCell = null;
+
+           // return;
+      //  }
+    //
+        Color color = mColor;
+        
+        //check neighbors for Enemys & Allys
+
+        Cell[] attackedCells = checkNeighbor();
+        if (attackedCells != null) {
+            for (int i = 0; i <= attackedCells.Length - 1; i++)
+            {
+                if (attackedCells[i] != null)
+                {
+                    attackedCells[i].RemovePiece();
+                    mPieceManager.moveAgain = true;
+                }
+            }
+        }
+        if (attackedCells != null)
+        {
+            if (color == Color.white)
+                color = Color.black;
+            else
+                color = Color.white;
+        }
+        Vector2 oldPosition = mCurrentCell.getBoardPosition();
+        mPieceManager.getBoard().simpleAllCells[(int)oldPosition.x, (int)oldPosition.y] = "empty";
+        mCurrentCell.mCurrentPiece = null;
+        Vector2 targetPosition = mTargetCell.getBoardPosition();
+        mPieceManager.getBoard().simpleAllCells[(int)oldPosition.x, (int)oldPosition.y] = this.name; // Moving on Boarddraught
+
+        mCurrentCell = mTargetCell;
+        mCurrentCell.mCurrentPiece = this;
+
         transform.position = mCurrentCell.transform.position;
         mTargetCell = null;
+        
+
         mPieceManager.SwitchSides(color);
 
     }
@@ -248,7 +325,7 @@ public class Piece : EventTrigger
 
     }
 
-    public void FindMoves()
+    public virtual void FindMoves()
     {
         int currentX = mTargetCell.mBoardPosition.x;
         int currentY = mTargetCell.mBoardPosition.y;
@@ -263,36 +340,47 @@ public class Piece : EventTrigger
 
         int counter = moves.Count;
         Move m = new Move();
-        m.mPiece = this;
+        //m.mPiece = this;
         m.attacked = false;
+        m.attacked2 = false;
         m.threaten = false;
         m.hide = false;
+        m.removeX = -1;
+        m.removeY = -1;
+        m.removeX2 = -1;
+        m.removeY2 = -1;
+        m.currentX = mCurrentCell.mBoardPosition.x;
+        m.currentY = mCurrentCell.mBoardPosition.y;
+        m.x = mTargetCell.mBoardPosition.x;
+        m.y = mTargetCell.mBoardPosition.y;
+
         if (mColor == Color.black)
             m.player = 2;
         else
             m.player = 1;
+
         if (mCurrentCell.mBoard.ValidateCell(targetX, targetY, this) == CellState.Enemy
             && mCurrentCell.mBoard.ValidateCell(allyX, allyY, this) == CellState.Friendly)
         {
             attackedCells.Add(mCurrentCell.mBoard.mAllCells[targetX, targetY]);
-            m.mScore = 10;
-            m.attacked = true;
-            m.x = mCurrentCell.mBoardPosition.x;
-            m.y = mCurrentCell.mBoardPosition.y;
-            m.removeX = targetX;
-            m.removeY = targetY;
+            if (m.attacked == true)
+            {
+                m.attacked2 = true;
+                m.removeX2 = targetX;
+                m.removeY2 = targetY;
+            }
+            else
+            {
+                m.attacked = true;
+                m.removeX = targetX;
+                m.removeY = targetY;
+            }
         }
 
         if (mCurrentCell.mBoard.ValidateCell(targetX, targetY, this) == CellState.Enemy
             && mCurrentCell.mBoard.ValidateCell(allyX, allyY, this) != CellState.Friendly)
         {
-            //attackedCells.Add(mCurrentCell.mBoard.mAllCells[targetX, targetY]);
-            m.mScore = 5;
             m.threaten = true;
-            m.x = mCurrentCell.mBoardPosition.x;
-            m.y = mCurrentCell.mBoardPosition.y;
-            m.removeX = targetX;
-            m.removeY = targetY;
         }
 
         targetX = mTargetCell.mBoardPosition.x - 1;
@@ -305,23 +393,25 @@ public class Piece : EventTrigger
 && mCurrentCell.mBoard.ValidateCell(allyX, allyY, this) == CellState.Friendly)
         {
             attackedCells.Add(mCurrentCell.mBoard.mAllCells[targetX, targetY]);
-            m.mScore = 10;
-            m.attacked = true;
-            m.x = mCurrentCell.mBoardPosition.x;
-            m.y = mCurrentCell.mBoardPosition.y;
-            m.removeX = targetX;
-            m.removeY = targetY;
+            if (m.attacked == true)
+            {
+                m.attacked2 = true;
+                m.removeX2 = targetX;
+                m.removeY2 = targetY;
+            }
+            else
+            {
+                m.attacked = true;
+                m.removeX = targetX;
+                m.removeY = targetY;
+            }
+
         }
 
         if (mCurrentCell.mBoard.ValidateCell(targetX, targetY, this) == CellState.Enemy
     && mCurrentCell.mBoard.ValidateCell(allyX, allyY, this) != CellState.Friendly)
         {
-            m.mScore = 5;
             m.threaten = true;
-            m.x = mCurrentCell.mBoardPosition.x;
-            m.y = mCurrentCell.mBoardPosition.y;
-            m.removeX = targetX;
-            m.removeY = targetY;
         }
 
         targetX = mTargetCell.mBoardPosition.x;
@@ -334,23 +424,24 @@ public class Piece : EventTrigger
     && mCurrentCell.mBoard.ValidateCell(allyX, allyY, this) == CellState.Friendly)
         {
             attackedCells.Add(mCurrentCell.mBoard.mAllCells[targetX, targetY]);
-            m.mScore = 10;
-            m.attacked = true;
-            m.x = mCurrentCell.mBoardPosition.x;
-            m.y = mCurrentCell.mBoardPosition.y;
-            m.removeX = targetX;
-            m.removeY = targetY;
+            if (m.attacked == true)
+            {
+                m.attacked2 = true;
+                m.removeX2 = targetX;
+                m.removeY2 = targetY;
+            }
+            else
+            {
+                m.attacked = true;
+                m.removeX = targetX;
+                m.removeY = targetY;
+            }
         }
 
         if (mCurrentCell.mBoard.ValidateCell(targetX, targetY, this) == CellState.Enemy
 && mCurrentCell.mBoard.ValidateCell(allyX, allyY, this) != CellState.Friendly)
         {
-            m.mScore = 5;
             m.threaten = true;
-            m.x = mCurrentCell.mBoardPosition.x;
-            m.y = mCurrentCell.mBoardPosition.y;
-            m.removeX = targetX;
-            m.removeY = targetY;
         }
 
         targetX = mTargetCell.mBoardPosition.x;
@@ -363,37 +454,44 @@ public class Piece : EventTrigger
     && mCurrentCell.mBoard.ValidateCell(allyX, allyY, this) == CellState.Friendly)
         {
             attackedCells.Add(mCurrentCell.mBoard.mAllCells[targetX, targetY]);
-            m.mScore = 10;
-            m.attacked = true;
-            m.x = mCurrentCell.mBoardPosition.x;
-            m.y = mCurrentCell.mBoardPosition.y;
-            m.removeX = targetX;
-            m.removeY = targetY;
+            if (m.attacked == true)
+            {
+                m.attacked2 = true;
+                m.removeX2 = targetX;
+                m.removeY2 = targetY;
+            }
+            else
+            {
+                m.attacked = true;
+                m.removeX = targetX;
+                m.removeY = targetY;
+            }
         }
-        if (mCurrentCell.mBoard.ValidateCell(targetX, targetY, this) == CellState.Enemy
+
+            if (mCurrentCell.mBoard.ValidateCell(targetX, targetY, this) == CellState.Enemy
 && mCurrentCell.mBoard.ValidateCell(allyX, allyY, this) != CellState.Friendly)
         {
-            m.mScore = 5;
             m.threaten = true;
-            m.x = mCurrentCell.mBoardPosition.x;
-            m.y = mCurrentCell.mBoardPosition.y;
-            m.removeX = targetX;
-            m.removeY = targetY;
+        }
+
+        if (mCurrentCell.mBoard.ValidateCell(targetX, targetY, this) != CellState.Enemy
+&& mCurrentCell.mBoard.ValidateCell(allyX, allyY, this) == CellState.Friendly)
+        {
+            m.hide = true;
         }
         moves.Add(m);
     }
 
 
-    public void ClearMoves()
+    public virtual void ClearMoves()
     {
         moves = new List<Move>();
     }
 
-    public void CreateCellPath(int xDirection, int yDirection, int movement, bool isAI)
+    public virtual void CreateCellPath(int xDirection, int yDirection, int movement, bool isAI)
     {
         int currentX = mCurrentCell.mBoardPosition.x;
         int currentY = mCurrentCell.mBoardPosition.y;
-        Move m = new Move();
 
         for (int i = 1; i<= movement; i++)
         {
@@ -421,12 +519,13 @@ public class Piece : EventTrigger
 
     }
 
-    protected virtual void CheckPathing(bool isAI)
+    public virtual void CheckPathing(bool isAI)
     {
         //Horizontal
+        ClearCells();
+
         if (isAI)
         {
-            ClearCells();
             ClearMoves();
         }
         CreateCellPath(1, 0, mMovement.x, isAI);
@@ -445,17 +544,58 @@ public class Piece : EventTrigger
          CreateCellPath(1, -1, mMovement.z);*/
     }
 
-
-    protected void ShowCells()
+    public virtual void CheckPath(Move m)
     {
-        foreach (Cell cell in mHighlightedCells)
+        int currentX = this.mCurrentCell.mBoardPosition.x;
+        int currentY = this.mCurrentCell.mBoardPosition.y;
+
+        if (currentX < m.x)
+        {
+            for (int i = currentX; i <= m.x; i++)
+            {
+                mHighlightedCells.Add(mCurrentCell.mBoard.mAllCells[i, m.y]);
+
+            }
+        }
+        else if (currentY < m.y)
+        {
+            for (int i = currentY; i <= m.y; i++)
+            {
+                mHighlightedCells.Add(mCurrentCell.mBoard.mAllCells[m.x, i]);
+
+            }
+        }
+        else if (currentX > m.x)
+        {
+            for (int i = currentX; i >= m.x; i--)
+            {
+                mHighlightedCells.Add(mCurrentCell.mBoard.mAllCells[i, m.y]);
+
+            }
+        }
+        else if (currentY > m.y)
+        {
+            for (int i = currentY; i >= m.y; i--)
+            {
+                mHighlightedCells.Add(mCurrentCell.mBoard.mAllCells[m.x, i]);
+
+            }
+        }
+
+
+
+    }
+
+    public void ShowCells()
+    {
+        foreach (CellDraughtV cell in mHighlightedCells)
             cell.highlight();
 
     }
 
-    protected void ClearCells()
+    public virtual void ClearCells()
     {
-        foreach (Cell cell in mHighlightedCells)
+        foreach (CellDraughtV cell in mHighlightedCells)
             cell.removeHighlight();
 
         mHighlightedCells.Clear();
@@ -482,7 +622,7 @@ public class Piece : EventTrigger
         transform.position += (Vector3)eventData.delta;
 
 
-        foreach (Cell cell in mHighlightedCells)
+        foreach (CellDraughtV cell in mHighlightedCells)
         {
             if (RectTransformUtility.RectangleContainsScreenPoint(cell.mRectTransform, Input.mousePosition))
             {
@@ -506,11 +646,12 @@ public class Piece : EventTrigger
             transform.position = mCurrentCell.gameObject.transform.position;
             return;
         }
+
         Move();
     }
     #endregion
 
-    public bool isDead ()
+    public virtual bool isDead ()
     {
         if (mCurrentCell.mCurrentPiece == null || mCurrentCell.mCurrentPiece != null && mCurrentCell.mCurrentPiece.name != this.name)
             return true;
@@ -520,12 +661,12 @@ public class Piece : EventTrigger
     }
 
 
-    public Cell getTargetCell()
+    public virtual CellDraughtV getTargetCell()
     {
         return mTargetCell;
     }
 
-    public Cell getCurrentCell()
+    public virtual CellDraughtV getCurrentCell()
     {
         return mCurrentCell;
     }
