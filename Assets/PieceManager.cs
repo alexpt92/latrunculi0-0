@@ -76,12 +76,26 @@ public class PieceManager : MonoBehaviour
     private List<Piece> CreatePieces(Color teamColor, Color32 spriteColor, Board board)
     {
         List<Piece> newPieces = new List<Piece>();
-        float height = Screen.height;
+
+
+        float height = (Screen.height / 4) * 3;
         float width = Screen.width;
         float midHeight = height / 2;
         float midWidth = width / 2;
-        float sizePieceY = height / board.sizeY;
-        float sizePieceX = width / board.sizeX;
+        float sizePieceY;
+        if (board.sizeY < board.sizeX)
+        {
+            sizePieceY = height / board.sizeX;
+
+        }
+        else
+        {
+            sizePieceY = height / board.sizeY;
+        }
+        float offsetY = (Screen.height - height) / 2;
+        float offsetX = (Screen.width - (board.sizeX * sizePieceY)) / 2;
+        float sizePieceX = sizePieceY;// * ratio;
+
         for (int i = 0; i < board.sizeX; i++)
         {
             //new Object
@@ -98,10 +112,12 @@ public class PieceManager : MonoBehaviour
             newPieceObject.transform.localScale = new Vector3(1, 1, 1);
             newPieceObject.transform.localRotation = Quaternion.identity;
             RectTransform rectTransform = newPieceObject.GetComponent<RectTransform>();
-          //  float height = Screen.height / (board.sizeY);
+            //  float height = Screen.height / (board.sizeY);
 
-            rectTransform.sizeDelta = new Vector2(sizePieceY+(sizePieceX -sizePieceY), sizePieceY);
-            rectTransform.anchoredPosition = new Vector2((i * sizePieceX), (i * sizePieceY));
+            //rectTransform.sizeDelta = new Vector2(sizePieceY+(sizePieceX -sizePieceY), sizePieceY);
+            rectTransform.sizeDelta = new Vector2(sizePieceX, sizePieceX);
+
+            rectTransform.anchoredPosition = new Vector2((i * sizePieceX) + offsetX, (i * sizePieceX) + offsetY);
 
             //Store piece
             Piece newPiece = (Piece)newPieceObject.AddComponent(typeof(SimplePiece));

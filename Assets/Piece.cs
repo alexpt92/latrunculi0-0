@@ -37,7 +37,7 @@ public class Piece : EventTrigger
         mPieceManager = newPieceManager;
 
         mColor = newTeamColor;
-        GetComponent<Image>().color = newSpriteColor;
+       // GetComponent<Image>().color = newSpriteColor;
         mRectTransform = GetComponent<RectTransform>();
         mMovement = movement;
     }
@@ -646,7 +646,7 @@ public class Piece : EventTrigger
             transform.position = mCurrentCell.gameObject.transform.position;
             return;
         }
-
+        Debug.Log(mPieceManager.getBoard().pointHide);
         Move();
     }
     #endregion

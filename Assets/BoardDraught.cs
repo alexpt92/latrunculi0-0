@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BoardDraught : Board
 {
@@ -12,8 +13,8 @@ public class BoardDraught : Board
     //public string[,] simpleAllCells;
     //protected int player;
     //private bool gameOver = false;
-    Vector3Int mMovement;
-    Color currentColor = Color.clear;
+   private Vector3Int mMovement;
+   private Color currentColor = Color.clear;
     List<Move> allMoves = new List<Move>();
     protected string movedPiece;
     protected int oldX;
@@ -22,6 +23,14 @@ public class BoardDraught : Board
     protected int currentY;
     protected Move lastMove = null;
     protected Move currentMove = null;
+
+
+    float eval = 1f;
+    float pointSimple = 1f;
+    float pointSuccess = 250f;
+    float pointAttacked = 100f;
+    float pointThreat = 10f;
+    float pointHide = 100f;
 
     // Start is called before the first frame update
     void Start()
@@ -40,16 +49,22 @@ public class BoardDraught : Board
         currentMove = newMove;
     }
 
-    public BoardDraught(string[,] copyBoard, int nextPlayer, int rows, int cols)
+    public BoardDraught(string[,] copyBoard, int nextPlayer, int rows, int cols, float newAttackPoints, float newHidePoints, float newThreatPoints)
     {
         simpleAllCells = copyBoard; 
         player = nextPlayer;
         this.sizeX = rows;
         this.sizeY = cols;
         mMovement = new Vector3Int(sizeX, sizeY, 1);
-
+        pointAttacked = newAttackPoints;
+        pointHide = newHidePoints;
+        pointThreat = newThreatPoints;
     }
 
+    public void changeAttackPoints ()
+    {
+
+    }
 
     private void CheckPathing(Vector2Int currentPos)
     {
@@ -375,7 +390,7 @@ public class BoardDraught : Board
     public override List<Move> GetMoves(int player)
     {
         allMoves = new List<Move>();
-        Vector3Int mMovement = new Vector3Int(sizeX, sizeY, 1);
+        mMovement = new Vector3Int(sizeX, sizeY, 1);
         string color;
         if (player == 1)
         {
@@ -414,24 +429,44 @@ public class BoardDraught : Board
         //return Mathf.NegativeInfinity;
     }
 
-   /* public virtual float Evaluate(int player, Move m)
-    {
-        string color = "W";
-        if (player == 1)
-            color = "B";
-        return Evaluate(color);
+    /* public virtual float Evaluate(int player, Move m)
+     {
+         string color = "W";
+         if (player == 1)
+             color = "B";
+         return Evaluate(color);
 
-        //return Mathf.NegativeInfinity;
-    }*/
+         //return Mathf.NegativeInfinity;
+     }*/
+    public void AdjustAttackPoints(float newAttackPoints)
+    {
+       // pointAttacked = attackSlider.value;
+        //Debug.Log(pointAttacked);
+    }
+  
+
+    public void AdjustThreatPoints(float newThreatPoints)
+    {
+        pointThreat = newThreatPoints;
+    }
+
+    public void AdjustSuccessPoints(float newWinPoints)
+    {
+        pointSuccess = newWinPoints;
+
+    }
+
+    public void AdjustHidePoints(float newHidePoints)
+    {
+        pointHide = newHidePoints;
+    }
+
     public float Evaluate(string color)
     {
-        float eval = 1f;
-        float pointSimple = 1f;
-        float pointSuccess = 250f;
-        float pointAttacked = 100f;
-        float pointThreat = 50f;
-        float pointHide = 10f;
-        int rows = sizeX;
+      float eval = 1f;
+
+
+    int rows = sizeX;
         int cols = sizeY;
        // int i;
         //int j;

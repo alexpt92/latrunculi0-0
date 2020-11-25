@@ -8,13 +8,18 @@ public class GameManager : MonoBehaviour
 
     public int sizeX;
     public int sizeY;
-    public GameObject wPrefab;
-    public GameObject bPrefab;
+   // public GameObject wPrefab;
+   // public GameObject bPrefab;
     public Board mBoard;
     public PieceManager mPieceManager;
     public AIManager mAIManager;
     public string mAIType;
     public int maxDepth;
+
+
+    private float pointAttacked = 100f;
+    private float pointThreat = 50f;
+    private float pointHide = -2f;
 
     private bool gameRunning;// = false;
                              // private int maxRounds = 10;
@@ -30,21 +35,21 @@ public class GameManager : MonoBehaviour
     {
         //Create Board
         // currentPlayer = 1;
-        Camera.main.transform.position = new Vector3(1, 1, 116);//mBoard.mAllCells[0, 0].mBoardPosition.x, mBoard.mAllCells[0, 0].mBoardPosition.y, 0);//1, 116);
-        Camera.main.orthographicSize = 10 * 100;
+       // Camera.main.transform.position = new Vector3(1, 1, 116);//mBoard.mAllCells[0, 0].mBoardPosition.x, mBoard.mAllCells[0, 0].mBoardPosition.y, 0);//1, 116);
+       // Camera.main.orthographicSize = 10 * 100;
         Camera.main.gameObject.SetActive(true);
         mBoard.Create();
 
         //Create Pieces
 
         mPieceManager.Setup(mBoard, "iwas");
-        Camera.main.transform.position = new Vector3(mBoard.mAllCells[0, 0].mBoardPosition.x , mBoard.mAllCells[0, 0].mBoardPosition.y, 0);//1, 116);
-        Camera.main.orthographicSize = 10 * 100;
+       // Camera.main.transform.position = new Vector3(mBoard.mAllCells[0, 0].mBoardPosition.x , mBoard.mAllCells[0, 0].mBoardPosition.y, 0);//1, 116);
+       // Camera.main.orthographicSize = 10 * 100;
         Camera.main.gameObject.SetActive(true);
         
      //   Camera.main.rect = new Rect(0, 0, 900, 900);
      //   GameObject.FindGameObjectWithTag("BoardCanvas").transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, 125));
-        GameObject.FindGameObjectWithTag("Pieces").transform.position = GameObject.FindGameObjectWithTag("BoardCanvas").transform.position;
+     //   GameObject.FindGameObjectWithTag("Pieces").transform.position = GameObject.FindGameObjectWithTag("BoardCanvas").transform.position;
 
         //Camera.main.orthographicSize = 9 * 40;
     }
@@ -57,13 +62,26 @@ public class GameManager : MonoBehaviour
         }*/
     }
 
+    public void ChangeAttackPoints(float newPoints)
+    {
+        pointAttacked = newPoints;
+    }
+    public void ChangeHidePoints(float newPoints)
+    {
+        pointHide = newPoints;
+    }
+    public void ChangeThreatPoints(float newPoints)
+    {
+        pointThreat = newPoints;
+    }
+
     public void MovePiece()
     {
 
         List<Move> moves = new List<Move>();
         mPieceManager.setBoard(mBoard);
         string[,] boarddraught = mBoard.getDraughtAsStrings();
-        BoardDraught b = new BoardDraught(boarddraught, currentPlayer, mBoard.sizeX, mBoard.sizeY);
+        BoardDraught b = new BoardDraught(boarddraught, currentPlayer, mBoard.sizeX, mBoard.sizeY, pointAttacked, pointHide, pointThreat);
         float test;
         Move currentMove = new Move();
 
@@ -123,8 +141,7 @@ public class GameManager : MonoBehaviour
         blist.ToArray()[idx].PlaceByAI(mBoard.mAllCells[currentMove.x, currentMove.y]);
         blist.ToArray()[idx].ClearCells();
 
-        //After we have waited 5 seconds print the time again.
-        //Debug.Log("Finished Coroutine at timestamp : " + Time.time);
+
     }
     public void nextPlayer()
     {
@@ -143,29 +160,8 @@ public class GameManager : MonoBehaviour
             else if (currentPlayer == 1)
             {
                 currentPlayer = 2;
-                //StartCoroutine(ExecuteMoveAfterDelay(1));
                 MovePiece();
-                /* List<Move> moves = new List<Move>();
-                mPieceManager.setBoard(mBoard);
 
-                    string[,] boarddraught = mBoard.getDraughtAsStrings();
-
-                    BoardDraught b = new BoardDraught(boarddraught, currentPlayer, mBoard.sizeX, mBoard.sizeY);
-                    float test;
-                Move currentMove = null;
-                test = AIManager.Minimax(b, currentPlayer, maxDepth, 0, ref currentMove);
-
-                //  Debug.Log("Next Move: " + m.mPieceName + " CurrentCell: " + m.mPiece.getCurrentCell().name + " TargetCell: " + mBoard.mAllCells[m.x, m.y].name);//.mPiece.getTargetCell().name);
-
-                List<Piece> blist = mPieceManager.getBPieces();
-                    for (int i = 0; i < blist.ToArray().Length; i++)
-                    {
-                        if (blist.ToArray()[i].name == currentMove.mPieceName)
-                        {
-                            blist.ToArray()[i].PlaceByAI(mBoard.mAllCells[currentMove.x, currentMove.y]);
-                            break;
-                        }
-                    }*/
             }
             else
                 currentPlayer = 1;

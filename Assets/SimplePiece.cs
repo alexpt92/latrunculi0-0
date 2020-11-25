@@ -11,7 +11,15 @@ public class SimplePiece : Piece
 
 
         // mMovement = new Vector3Int(this.X, this.Y, 0);
-        GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("simplePiece");
+        // GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("simplePiece"); simple Circle
+        if (newTeamColor == Color.white)
+        //GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("Prop_5");
+        GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("18");
+
+        else if (newTeamColor == Color.black)
+       //     GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("Prop_6");
+       GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("15");
+
     }
 
 
