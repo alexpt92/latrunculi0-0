@@ -30,19 +30,19 @@ public class Board : MonoBehaviour
     public string[,] simpleAllCells;
     protected int player;
     //private bool gameOver;//= false;
-    Vector3Int mMovement;
+    protected Vector3Int mMovement;
     Color currentColor = Color.clear;
 
-    public float pointSimple = 1f;
+  /*  public float pointSimple = 1f;
     public float pointSuccess = 250f;
     public float pointAttacked = 100f;
     public float pointThreat = 10f;
-    public float pointHide = 5f;
+    public float pointHide = 5f;*/
 
-    private void Update()
+   /* private void Update()
     {
         Debug.Log("Attack: " + pointAttacked + " Hide: " + pointHide + " Threat: " + pointThreat);
-    }
+    }*/
     /* public Board(Cell[,] copyBoard, int nextPlayer, int rows, int cols)
      {
          mAllCells = copyBoard;
@@ -131,6 +131,51 @@ public class Board : MonoBehaviour
             gameOver = true;
         }
         return gameOver;
+    }
+
+    internal void resizeBoard()
+    {
+
+
+        float height = (Screen.height / 4) * 3;
+        float width = Screen.width;
+        float midHeight = height / 2;
+        float midWidth = width / 2;
+        float sizePieceY;
+        if (sizeY < sizeX)
+        {
+            sizePieceY = height / sizeX;
+
+        }
+        else
+        {
+            sizePieceY = height / sizeY;
+        }
+        float offsetY = (Screen.height - height) / 2;
+        float offsetX = (Screen.width - (sizeX * sizePieceY)) / 2;
+        float sizePieceX = sizePieceY;
+
+        for (int y = 0; y < this.sizeY; y++)
+        {
+            for (int x = 0; x < this.sizeX; x++)
+            {
+
+                GameObject currentCell = mAllCells[x, y].gameObject;
+
+
+                //Position
+                RectTransform rectTransform = currentCell.GetComponent<RectTransform>();
+
+                rectTransform.sizeDelta = new Vector2(sizePieceX, sizePieceX);
+                rectTransform.anchoredPosition = new Vector2((x * sizePieceX) + offsetX, (y * sizePieceX) + offsetY);
+
+                //Setup
+                currentCell.name = "CellX" + x + "Y" + y;
+                mAllCells[x, y] = currentCell.GetComponent<CellDraughtV>();
+                simpleAllCells[x, y] = "empty";
+
+            }
+        }
     }
 
     public virtual float Evaluate(int player)
@@ -369,7 +414,7 @@ public class Board : MonoBehaviour
         }
 
         if (ValidateCell(targetX, targetY) == CellState.Enemy
-            && ValidateCell(allyX, allyY) != CellState.Friendly)
+            && ValidateCell(allyX, allyY) != CellState.Friendly && ValidateCell(allyX, allyY) != CellState.OutOfBounds)
         {//check for threat
             m.threaten = true;
         }
@@ -381,7 +426,7 @@ public class Board : MonoBehaviour
         allyY = targetPos.y;
 
         if (ValidateCell(targetX, targetY) == CellState.Enemy
-&& ValidateCell(allyX, allyY) == CellState.Friendly)
+            && ValidateCell(allyX, allyY) == CellState.Friendly)
         {//check for attack
             attackedCells.Add(new Vector2Int(targetX, targetY));
             if (m.attacked == true)
@@ -400,7 +445,7 @@ public class Board : MonoBehaviour
         }
 
         if (ValidateCell(targetX, targetY) == CellState.Enemy
-    && ValidateCell(allyX, allyY) != CellState.Friendly)
+            && ValidateCell(allyX, allyY) != CellState.Friendly && ValidateCell(allyX, allyY) != CellState.OutOfBounds)
         {//check for threat
             m.threaten = true;
         }
@@ -412,7 +457,7 @@ public class Board : MonoBehaviour
         allyY = targetPos.y + 2;
 
         if (ValidateCell(targetX, targetY) == CellState.Enemy
-    && ValidateCell(allyX, allyY) == CellState.Friendly)
+            && ValidateCell(allyX, allyY) == CellState.Friendly)
         {//check for attack
             attackedCells.Add(new Vector2Int(targetX, targetY));
             if (m.attacked == true)
@@ -430,7 +475,7 @@ public class Board : MonoBehaviour
         }
 
         if (ValidateCell(targetX, targetY) == CellState.Enemy
-&& ValidateCell(allyX, allyY) != CellState.Friendly)
+            && ValidateCell(allyX, allyY) != CellState.Friendly && ValidateCell(allyX, allyY) != CellState.OutOfBounds)
         {//check for threat
             m.threaten = true;
         }
@@ -442,7 +487,7 @@ public class Board : MonoBehaviour
         allyY = targetPos.y - 2;
 
         if (ValidateCell(targetX, targetY) == CellState.Enemy
-    && ValidateCell(allyX, allyY) == CellState.Friendly)
+            && ValidateCell(allyX, allyY) == CellState.Friendly)
         {//check for attack
             attackedCells.Add(new Vector2Int(targetX, targetY));
             if (m.attacked == true)
@@ -460,17 +505,113 @@ public class Board : MonoBehaviour
         }
 
         if (ValidateCell(targetX, targetY) == CellState.Enemy
-&& ValidateCell(allyX, allyY) != CellState.Friendly)
+            && ValidateCell(allyX, allyY) != CellState.Friendly && 
+            ValidateCell(allyX, allyY) != CellState.OutOfBounds)
         {//check for threat
             m.threaten = true;
         }
 
         if (ValidateCell(targetX, targetY) != CellState.Enemy
-&& ValidateCell(allyX, allyY) == CellState.Friendly)
+            && ValidateCell(allyX, allyY) == CellState.Friendly)
         {
             m.hide = true;
         }
-        allMoves.Add(m);
+
+
+
+         targetX = targetPos.x - 1;
+         targetY = targetPos.y - 1;
+
+         allyX = targetPos.x - 1;
+         allyY = targetPos.y - 2;
+
+        if (ValidateCell(targetX, targetY) == CellState.Enemy
+    && ValidateCell(allyX, allyY) == CellState.Friendly)
+        {
+            m.highThreat = true;
+        }
+
+        targetX = targetPos.x - 1;
+        targetY = targetPos.y - 1;
+
+        allyX = targetPos.x - 2;
+        allyY = targetPos.y - 1;
+
+        if (ValidateCell(targetX, targetY) == CellState.Enemy
+&& ValidateCell(allyX, allyY) == CellState.Friendly)
+        {
+            m.highThreat = true;
+        }
+        //----------------
+        targetX = targetPos.x + 1;
+        targetY = targetPos.y - 1;
+
+        allyX = targetPos.x + 1;
+        allyY = targetPos.y - 2;
+        if (ValidateCell(targetX, targetY) == CellState.Enemy
+&& ValidateCell(allyX, allyY) == CellState.Friendly)
+        {
+            m.highThreat = true;
+        }
+        targetX = targetPos.x + 1;
+        targetY = targetPos.y - 1;
+
+        allyX = targetPos.x + 2;
+        allyY = targetPos.y - 1;
+        if (ValidateCell(targetX, targetY) == CellState.Enemy
+&& ValidateCell(allyX, allyY) == CellState.Friendly)
+        {
+            m.highThreat = true;
+        }
+        //--------
+        targetX = targetPos.x + 1;
+        targetY = targetPos.y + 1;
+
+        allyX = targetPos.x + 1;
+        allyY = targetPos.y + 2;
+
+        if (ValidateCell(targetX, targetY) == CellState.Enemy
+&& ValidateCell(allyX, allyY) == CellState.Friendly)
+        {
+            m.highThreat = true;
+        }
+        targetX = targetPos.x + 1;
+        targetY = targetPos.y + 1;
+
+        allyX = targetPos.x + 2;
+        allyY = targetPos.y + 1;
+
+        if (ValidateCell(targetX, targetY) == CellState.Enemy
+&& ValidateCell(allyX, allyY) == CellState.Friendly)
+        {
+            m.highThreat = true;
+        }
+        //---------
+        targetX = targetPos.x - 1;
+        targetY = targetPos.y + 1;
+
+        allyX = targetPos.x - 2;
+        allyY = targetPos.y + 1;
+
+        if (ValidateCell(targetX, targetY) == CellState.Enemy
+&& ValidateCell(allyX, allyY) == CellState.Friendly)
+        {
+            m.highThreat = true;
+        }
+
+        targetX = targetPos.x - 1;
+        targetY = targetPos.y + 1;
+
+        allyX = targetPos.x - 1;
+        allyY = targetPos.y + 2;
+
+        if (ValidateCell(targetX, targetY) == CellState.Enemy
+&& ValidateCell(allyX, allyY) == CellState.Friendly)
+        {
+            m.highThreat = true;
+        }
+
+            allMoves.Add(m);
     }
 
 
@@ -675,8 +816,10 @@ public class Board : MonoBehaviour
         return CellState.None;
     }
 
-    public void Create()
+    public void Create(int newSizeX, int newSizeY)
     {
+        this.sizeX = newSizeX;
+        this.sizeY = newSizeY;
         //UnityEngine.Object.Instantiate(mCellPrefab, new Vector3(y * 3 - sizeX / 2, x * 3 - sizeY / 2), Quaternion.identity);
         //gameOver = false;
         mAllCells = new CellDraughtV[this.sizeX, this.sizeY];

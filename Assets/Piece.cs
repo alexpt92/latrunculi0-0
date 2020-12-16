@@ -383,6 +383,12 @@ public class Piece : EventTrigger
             m.threaten = true;
         }
 
+        if (mCurrentCell.mBoard.ValidateCell(targetX, targetY, this) != CellState.Enemy
+&& mCurrentCell.mBoard.ValidateCell(allyX, allyY, this) == CellState.Friendly)
+        {
+            m.hide = true;
+        }
+
         targetX = mTargetCell.mBoardPosition.x - 1;
         targetY = mTargetCell.mBoardPosition.y;
 
@@ -414,6 +420,12 @@ public class Piece : EventTrigger
             m.threaten = true;
         }
 
+        if (mCurrentCell.mBoard.ValidateCell(targetX, targetY, this) != CellState.Enemy
+&& mCurrentCell.mBoard.ValidateCell(allyX, allyY, this) == CellState.Friendly)
+        {
+            m.hide = true;
+        }
+
         targetX = mTargetCell.mBoardPosition.x;
         targetY = mTargetCell.mBoardPosition.y + 1;
 
@@ -442,6 +454,12 @@ public class Piece : EventTrigger
 && mCurrentCell.mBoard.ValidateCell(allyX, allyY, this) != CellState.Friendly)
         {
             m.threaten = true;
+        }
+
+        if (mCurrentCell.mBoard.ValidateCell(targetX, targetY, this) != CellState.Enemy
+&& mCurrentCell.mBoard.ValidateCell(allyX, allyY, this) == CellState.Friendly)
+        {
+            m.hide = true;
         }
 
         targetX = mTargetCell.mBoardPosition.x;
@@ -646,7 +664,7 @@ public class Piece : EventTrigger
             transform.position = mCurrentCell.gameObject.transform.position;
             return;
         }
-        Debug.Log(mPieceManager.getBoard().pointHide);
+       // Debug.Log(mPieceManager.getBoard().pointHide);
         Move();
     }
     #endregion

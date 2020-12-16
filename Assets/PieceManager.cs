@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using UnityEngine;
@@ -59,7 +60,7 @@ public class PieceManager : MonoBehaviour
         mWPieces = CreatePieces(Color.white, new Color32(100, 100, 100, 255), board);        
         //Create Black Pieces
         mBPieces = CreatePieces(Color.black, new Color32(0, 0, 0, 255), board);
-
+       // mAllPieces = mWPieces.ToArray().CopyTo(mAllPieces.ToArray(), mAllPieces.ToArray().Length - 1);//.Union<Piece>;
 
 
         PlacePieces(0, mWPieces, board);
@@ -68,10 +69,123 @@ public class PieceManager : MonoBehaviour
 
         //White starts
         //Switch Sides
-        SwitchSides(Color.black);
+       
+        //!!!!!SwitchSides(Color.black);
 
     }
 
+
+    void Update()
+    {
+        /*
+        float height = (Screen.height / 4) * 3;
+        float width = Screen.width;
+        float midHeight = height / 2;
+        float midWidth = width / 2;
+        float sizePieceY;
+        if (board.sizeY < board.sizeX)
+        {
+            sizePieceY = height / board.sizeX;
+
+        }
+        else
+        {
+            sizePieceY = height / board.sizeY;
+        }
+        float offsetY = (Screen.height - height) / 2;
+        float offsetX = (Screen.width - (board.sizeX * sizePieceY)) / 2;
+        //float ratio = width / height;
+        //float sizePieceX = width / sizeX;
+        float sizePieceX = sizePieceY;//*ratio;
+
+        //float offset = (width - height) / 2;
+
+
+        for (int y = 0; y < this.board.sizeY; y++)
+        {
+            for (int x = 0; x < this.board.sizeX; x++)
+            {
+                board.mAllCells[x, y].GetComponent<RectTransform>().sizeDelta = new Vector2(sizePieceX, sizePieceX);
+                board.mAllCells[x, y].GetComponent<RectTransform>().anchoredPosition = new Vector2((board.mAllCells[x, y].GetComponent<RectTransform>().anchoredPosition.x * sizePieceX) + offsetX, (board.mAllCells[x, y].GetComponent<RectTransform>().anchoredPosition.y * sizePieceX) + offsetY);
+                // mCellPrefab.transform.
+               // GameObject newCell = Instantiate(board.mCellPrefab, transform);//Instantiate(mCellPrefab, new Vector3(x * newX, y*newY), Quaternion.identity);
+                                                                         //Instantiate(mCellPrefab, transform);
+
+
+                //Position
+
+
+               
+
+
+             //   rectTransform.sizeDelta = new Vector2(sizePieceX, sizePieceX);
+             //   rectTransform.anchoredPosition = new Vector2((x * sizePieceX) + offsetX, (y * sizePieceX) + offsetY);
+
+                //Setup
+               // board.mAllCells[x, y].Setup(new Vector2Int((int)(x), (int)y), this.board);
+              // board.simpleAllCells[x, y] = "empty";
+
+            }
+        }*/
+    }
+
+    internal void resizePieces()
+    {
+        List<Piece> newPieces = new List<Piece>();
+
+
+        float height = (Screen.height / 4) * 3;
+        float width = Screen.width;
+        float sizePieceY;
+        if (board.sizeY < board.sizeX)
+        {
+            sizePieceY = height / board.sizeX;
+
+        }
+        else
+        {
+            sizePieceY = height / board.sizeY;
+        }
+        float offsetY = (Screen.height - height) / 2;
+        float offsetX = (Screen.width - (board.sizeX * sizePieceY)) / 2;
+        float sizePieceX = sizePieceY;// * ratio;
+
+        for (int i = 0; i < getBPieces().ToArray().Length; i++)
+        {
+            //new Object
+            GameObject newPieceObject = getBPieces().ToArray()[i].gameObject;
+
+            RectTransform rectTransform = newPieceObject.GetComponent<RectTransform>();
+
+            rectTransform.sizeDelta = new Vector2(sizePieceX, sizePieceX);
+            Vector3 currentCellPos = getBPieces().ToArray()[i].getCurrentCell().GetComponent<RectTransform>().anchoredPosition;
+            rectTransform.anchoredPosition = new Vector3(currentCellPos.x, currentCellPos.y, 0);
+            //getBPieces().ToArray()[i].getCurrentCell().GetComponent<RectTransform>().anchoredPosition;
+            //rectTransform.anchoredPosition = new Vector2((i * sizePieceX) + offsetX, (i * sizePieceX) + offsetY);
+
+            //Store piece
+          //  Piece newPiece = (Piece)newPieceObject.AddComponent(typeof(SimplePiece));
+          //  newPieces.Add(newPiece);
+
+        }
+        for (int i = 0; i < getWPieces().ToArray().Length; i++)
+        {
+            //new Object
+            GameObject newPieceObject = getWPieces().ToArray()[i].gameObject;
+
+            RectTransform rectTransform = newPieceObject.GetComponent<RectTransform>();
+
+            rectTransform.sizeDelta = new Vector2(sizePieceX, sizePieceX);
+            Vector3 currentCellPos = getWPieces().ToArray()[i].getCurrentCell().GetComponent<RectTransform>().anchoredPosition;
+            rectTransform.anchoredPosition = new Vector3(currentCellPos.x, currentCellPos.y, 0);
+           // rectTransform.anchoredPosition = getWPieces().ToArray()[i].getCurrentCell().GetComponent<RectTransform>().anchoredPosition;//new Vector2((i * sizePieceX) + offsetX, (i * sizePieceX) + offsetY);
+
+            //Store piece
+            //Piece newPiece = (Piece)newPieceObject.AddComponent(typeof(SimplePiece));
+            //newPieces.Add(newPiece);
+
+        }
+    }
 
     private List<Piece> CreatePieces(Color teamColor, Color32 spriteColor, Board board)
     {
@@ -200,7 +314,7 @@ public class PieceManager : MonoBehaviour
                 Debug.Log("White wins. No Moves left.");
 
             }
-            ResetPieces();
+            ResetPieces(false);
         }
         else {
             for (int i = 0; i < wPieces.Length; i++)
@@ -212,7 +326,7 @@ public class PieceManager : MonoBehaviour
                     {
                         Debug.Log("Black wins.");
 
-                        ResetPieces();
+                        ResetPieces(false);
                         //  SwitchSides(Color.black);
                     }
                 }
@@ -223,7 +337,7 @@ public class PieceManager : MonoBehaviour
                     {
                         Debug.Log("White wins.");
 
-                        ResetPieces();
+                        ResetPieces(false);
                         // SwitchSides(Color.black);
                     }
                 }
@@ -237,7 +351,7 @@ public class PieceManager : MonoBehaviour
             GameManager referenceScript;
             referenceObject = GameObject.FindGameObjectWithTag("GameManager");
             referenceScript = referenceObject.GetComponent<GameManager>();
-            if (referenceScript.getCurrentPlayer() == 1)
+            if (referenceScript.getCurrentPlayer() == 1 && referenceScript.AIActive != 2)
             {
                 DisableAllPieces();
             }
@@ -281,7 +395,7 @@ public class PieceManager : MonoBehaviour
 
     }
 
-    public void ResetPieces()
+    public void ResetPieces(bool startAgain)
     {
         //Reset White
         foreach (Piece piece in mWPieces)
@@ -293,6 +407,10 @@ public class PieceManager : MonoBehaviour
             piece.Reset();
         }
         moveAgain = false;
+        if (startAgain)
+        {
+            SwitchSides(Color.black);
+        }
     }
 
     public Cell GetCellByPos(Vector3 pos)

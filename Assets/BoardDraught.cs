@@ -31,6 +31,7 @@ public class BoardDraught : Board
     float pointAttacked = 100f;
     float pointThreat = 10f;
     float pointHide = 100f;
+    float pointHighThreat = 75f;
 
     // Start is called before the first frame update
     void Start()
@@ -49,7 +50,7 @@ public class BoardDraught : Board
         currentMove = newMove;
     }
 
-    public BoardDraught(string[,] copyBoard, int nextPlayer, int rows, int cols, float newAttackPoints, float newHidePoints, float newThreatPoints)
+    public BoardDraught(string[,] copyBoard, int nextPlayer, int rows, int cols, float newAttackPoints, float newHidePoints, float newThreatPoints, float newHighThreatPoints)
     {
         simpleAllCells = copyBoard; 
         player = nextPlayer;
@@ -59,6 +60,7 @@ public class BoardDraught : Board
         pointAttacked = newAttackPoints;
         pointHide = newHidePoints;
         pointThreat = newThreatPoints;
+        pointHighThreat = newHighThreatPoints;
     }
 
     public void changeAttackPoints ()
@@ -138,7 +140,8 @@ public class BoardDraught : Board
         }
 
         if (ValidateCell(targetX, targetY) == CellState.Enemy
-            && ValidateCell(allyX, allyY) != CellState.Friendly)
+            && ValidateCell(allyX, allyY) != CellState.Friendly
+            && ValidateCell(allyX, allyY) != CellState.OutOfBounds)
         {
             m.threaten = true;
         }
@@ -169,7 +172,8 @@ public class BoardDraught : Board
         }
 
         if (ValidateCell(targetX, targetY) == CellState.Enemy
-    && ValidateCell(allyX, allyY) != CellState.Friendly)
+    && ValidateCell(allyX, allyY) != CellState.Friendly
+    && ValidateCell(allyX, allyY) != CellState.OutOfBounds)
         {
             m.threaten = true;
         }
@@ -199,7 +203,8 @@ public class BoardDraught : Board
         }
 
         if (ValidateCell(targetX, targetY) == CellState.Enemy
-&& ValidateCell(allyX, allyY) != CellState.Friendly)
+&& ValidateCell(allyX, allyY) != CellState.Friendly
+&& ValidateCell(allyX, allyY) != CellState.OutOfBounds)
         {
             m.threaten = true;
         }
@@ -229,7 +234,8 @@ public class BoardDraught : Board
         }
 
         if (ValidateCell(targetX, targetY) == CellState.Enemy
-&& ValidateCell(allyX, allyY) != CellState.Friendly)
+&& ValidateCell(allyX, allyY) != CellState.Friendly
+&& ValidateCell(allyX, allyY) != CellState.OutOfBounds)
         {
             m.threaten = true;
         }
@@ -468,16 +474,6 @@ public class BoardDraught : Board
 
     int rows = sizeX;
         int cols = sizeY;
-       // int i;
-        //int j;
-
-        //for (i = 0; i < rows; i++)
-        //{
-            //for (j = 0; j < cols; j++)
-          //  {
-                //string p = simpleAllCells[i, j];
-                //if (p == null || !(p.Contains(color)))
-                  //  continue;
 
                     if (currentMove.attacked)
                         eval += pointAttacked;
@@ -491,6 +487,8 @@ public class BoardDraught : Board
                         eval += pointSimple;
                     if (currentMove.success)
                         eval += pointSuccess;
+        if (currentMove.highThreat)
+            eval += pointHighThreat;
                     if (IsGameOver())
                         eval += pointSuccess;
                         currentMove.mScore += eval;

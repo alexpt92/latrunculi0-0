@@ -4,27 +4,7 @@ using UnityEngine;
 
 public class AIManager : MonoBehaviour
 {
-
-    Dictionary<Color, List<Piece>> pieceLists;
-    string aiType;
-
-
     // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-
-    public virtual void Setup (string newAIType)
-    {
-        if (newAIType == "minimax")
-        {
-
-        }
-    }
-
-
 
 public static float Minimax(
             BoardDraught board,
@@ -59,7 +39,10 @@ public static float Minimax(
         }
         BoardDraught bTest = board;
         Move currentMove;
-
+        if (currentDepth == 0)
+        {
+           float maxScore = 0;
+        }
         foreach (Move m in allMoves)//board.GetMoves())
         {
             bTest = board.MakeMove(m);
@@ -74,6 +57,7 @@ public static float Minimax(
                     nextPlayer = 2;
             } 
             currentScore = Minimax(bTest, nextPlayer, maxDepth, currentDepth + 1, ref currentMove);
+
             board.SetCurrentMove(m);
             float newScore = board.Evaluate(player);
             //Evaluierung aktueller Move
@@ -103,7 +87,25 @@ public static float Minimax(
             }
             bTest.StepBack();
         }
-     //   bestMove.mScore = bestScore;
+        List<Move> bestMoves = new List<Move>();
+        if (currentDepth == 0)
+        {
+            foreach (Move m in allMoves)
+            {
+                if (m.mScore == bestScore)
+                {
+                    bestMoves.Add(m);
+                }
+            }
+            System.Random rnd = new System.Random();
+
+            int index = rnd.Next(bestMoves.Count);
+            bestMove = bestMoves.ToArray()[index];
+        }
+        //board.GetMoves())
+
+
+        //   bestMove.mScore = bestScore;
         return bestScore;
     }
 }

@@ -18,9 +18,11 @@ public class Move
     public bool success;
     public bool threaten;
     public bool hide; //??
+    public bool highThreat;
     public bool attacked;
     public bool attacked2;
     public bool moveAgain;
+
 
     public int removeX;
     public int removeY;

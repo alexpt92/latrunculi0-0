@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,11 +18,33 @@ public class GameManager : MonoBehaviour
     public AIManager mAIManager;
     public string mAIType;
     public int maxDepth;
-
-
+    public int AIActive;
+    public Slider attackSlider;
+    public Slider threatSlider;
+    public Slider hideSlider;
+    private Task t;
+    private bool moving = false;
+    //public bool secondAI;
+    public Toggle secondAIActive;
+   /* private float pointAttacked = 100f;
+    private float pointThreat = 50f;
+    private float pointHide = -2f;*/
     private float pointAttacked = 100f;
     private float pointThreat = 50f;
-    private float pointHide = -2f;
+    private float pointHide = 20f;
+    private float pointHighThreat = 0f;
+
+    public InputField InputX;
+    public InputField InputY;
+    public TextMeshPro winText;
+    public TextMesh loseText;
+    public Text WinText;
+
+    private float pointAttacked2 = 80f;
+    private float pointThreat2 = 50f;
+    private float pointHide2 = 20f;
+    private float pointHighThreat2 = 0f;
+
 
     private bool gameRunning;// = false;
                              // private int maxRounds = 10;
@@ -29,37 +54,121 @@ public class GameManager : MonoBehaviour
     string winner;
 
     private bool moveAgain;
+    Vector2 initialVectorBottomLeft;
+    Vector2 initialVectorTopRight;
+
+    Vector2 updatedVectorBottomLeft;
+    Vector2 updatedVectorTopRight;
+
 
     // Start is called before the first frame update
     void Start()
     {
-        //Create Board
-        // currentPlayer = 1;
-       // Camera.main.transform.position = new Vector3(1, 1, 116);//mBoard.mAllCells[0, 0].mBoardPosition.x, mBoard.mAllCells[0, 0].mBoardPosition.y, 0);//1, 116);
-       // Camera.main.orthographicSize = 10 * 100;
+ 
         Camera.main.gameObject.SetActive(true);
-        mBoard.Create();
+
+
+
+        //Values for RESIZE
+        initialVectorBottomLeft = Camera.main.ScreenToWorldPoint(new Vector2(0, 0));
+        initialVectorTopRight = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
+
+        //Create Board
+
+        //  mBoard.Create();
+
+
 
         //Create Pieces
+        //  mPieceManager.Setup(mBoard, "iwas");
 
-        mPieceManager.Setup(mBoard, "iwas");
-       // Camera.main.transform.position = new Vector3(mBoard.mAllCells[0, 0].mBoardPosition.x , mBoard.mAllCells[0, 0].mBoardPosition.y, 0);//1, 116);
-       // Camera.main.orthographicSize = 10 * 100;
-        Camera.main.gameObject.SetActive(true);
-        
-     //   Camera.main.rect = new Rect(0, 0, 900, 900);
-     //   GameObject.FindGameObjectWithTag("BoardCanvas").transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, 125));
-     //   GameObject.FindGameObjectWithTag("Pieces").transform.position = GameObject.FindGameObjectWithTag("BoardCanvas").transform.position;
+        GameObject.FindGameObjectWithTag("StartButton").SetActive(true);
 
-        //Camera.main.orthographicSize = 9 * 40;
+
+
     }
+
+
 
     void Update()
     {
-      /*  if (Input.GetKey(KeyCode.Escape))
+        updatedVectorBottomLeft = Camera.main.ScreenToWorldPoint(new Vector2(0, 0));
+        updatedVectorTopRight = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
+
+        if ((initialVectorBottomLeft != updatedVectorBottomLeft) || (initialVectorTopRight != updatedVectorTopRight))
         {
-            Application.Quit();
-        }*/
+            if (mBoard.mAllCells != null)
+            {
+                mBoard.resizeBoard();
+                mPieceManager.resizePieces();
+            }
+            //EscapeMenuActivator.resizeUI();
+            initialVectorBottomLeft = updatedVectorBottomLeft;
+            initialVectorTopRight = updatedVectorTopRight;
+        }
+    }
+
+    public void StartGame()
+    {
+        GameObject.FindGameObjectWithTag("StartButton").SetActive(false);
+
+        if (secondAIActive.isOn)
+        {
+            AIActive = 2;
+        }
+        else
+            AIActive = 1;
+
+        if (InputX.text == "")
+            sizeX = 8;
+        else
+            sizeX = System.Int32.Parse(InputX.text);
+
+        if (InputY.text == "")
+            sizeY = 8;
+        else
+            sizeY = System.Int32.Parse(InputY.text);
+
+
+        mBoard.Create(sizeX, sizeY);
+
+
+
+        //Create Pieces
+        mPieceManager.Setup(mBoard, "iwas");
+
+        mPieceManager.SwitchSides(Color.black);
+    }
+
+    public float getPoints(string type)
+    {
+        if (type=="attack")
+        {
+            return pointAttacked;
+        }
+        else if (type =="threat")
+        {
+            return pointThreat;
+        }
+        else if (type =="hide")
+        {
+            return pointHide;
+        }
+        else if (type == "attack2")
+
+            {
+                return pointAttacked2;
+            }
+            else if (type == "threat2")
+            {
+                return pointThreat2;
+            }
+            else if (type == "hide2")
+            {
+                return pointHide2;
+            }
+        else
+        return 0;
     }
 
     public void ChangeAttackPoints(float newPoints)
@@ -74,36 +183,134 @@ public class GameManager : MonoBehaviour
     {
         pointThreat = newPoints;
     }
+    public void ChangeAttackPoints2(float newPoints)
+    {
+        pointAttacked2 = newPoints;
+    }
+    public void ChangeHidePoints2(float newPoints)
+    {
+        pointHide2 = newPoints;
+    }
+    public void ChangeThreatPoints2(float newPoints)
+    {
+        pointThreat2 = newPoints;
+    }
 
     public void MovePiece()
     {
-
-        List<Move> moves = new List<Move>();
-        mPieceManager.setBoard(mBoard);
-        string[,] boarddraught = mBoard.getDraughtAsStrings();
-        BoardDraught b = new BoardDraught(boarddraught, currentPlayer, mBoard.sizeX, mBoard.sizeY, pointAttacked, pointHide, pointThreat);
-        float test;
-        Move currentMove = new Move();
-
-        test = AIManager.Minimax(b, currentPlayer, maxDepth, 0, ref currentMove);
-
-        //  Debug.Log("Moves Again: " + m.mPiece.name + " CurrentCell: " + m.mPiece.getCurrentCell().name + " TargetCell: " + mBoard.mAllCells[m.x, m.y].name);//.mPiece.getTargetCell().name);
-       // StartCoroutine(ExecuteMoveAfterDelay(1));
-        List<Piece> blist = mPieceManager.getBPieces();
-        for (int i = 0; i < blist.ToArray().Length; i++)
+        if (currentPlayer == 2)
         {
-            if (blist.ToArray()[i].name == currentMove.mPieceName)
+            List<Move> moves = new List<Move>();
+            mPieceManager.setBoard(mBoard);
+            string[,] boarddraught = mBoard.getDraughtAsStrings();
+            BoardDraught b = new BoardDraught(boarddraught, currentPlayer, mBoard.sizeX, mBoard.sizeY, pointAttacked, pointHide, pointThreat, pointHighThreat);
+            float test;
+            Move currentMove = new Move();
+
+            test = AIManager.Minimax(b, currentPlayer, maxDepth, 0, ref currentMove);
+
+            // StartCoroutine(ExecuteMoveAfterDelay(1));
+            List<Piece> blist = mPieceManager.getBPieces();
+            for (int i = 0; i < blist.ToArray().Length; i++)
             {
-                blist.ToArray()[i].CheckPath(currentMove);
-                blist.ToArray()[i].ShowCells();
-                //StartCoroutine(ExecuteHighlightAfterDelay(1, i, currentMove));
+                if (blist.ToArray()[i].name == currentMove.mPieceName)
+                {
+                    blist.ToArray()[i].CheckPath(currentMove);
+                    StartCoroutine(ExecuteMoveAfterDelay((float)1.5f, i, currentMove));
+                    break;
+                }
+            }
 
-                StartCoroutine(ExecuteMoveAfterDelay((float)1.5, i, currentMove));
+        }
+        else if (currentPlayer == 1 && AIActive==2)
+        {
+            List<Move> moves = new List<Move>();
+            mPieceManager.setBoard(mBoard);
+            string[,] boarddraught = mBoard.getDraughtAsStrings();
+            BoardDraught b = new BoardDraught(boarddraught, currentPlayer, mBoard.sizeX, mBoard.sizeY, pointAttacked2, pointHide2, pointThreat2, pointHighThreat2);
+            float test;
+            Move currentMove = new Move();
 
-                break;
+            test = AIManager.Minimax(b, currentPlayer, maxDepth, 0, ref currentMove);
+
+            List<Piece> wlist = mPieceManager.getWPieces();
+            for (int i = 0; i < wlist.ToArray().Length; i++)
+            {
+                if (wlist.ToArray()[i].name == currentMove.mPieceName)
+                {
+                    wlist.ToArray()[i].CheckPath(currentMove);
+                    StartCoroutine(ExecuteMoveAfterDelay((float)1.5f, i, currentMove));
+                    break;
+                }
             }
         }
     }
+
+    /*IEnumerator Move ()
+    {
+        yield return new WaitForSeconds(5f);
+        
+        if (currentPlayer == 2)
+        {
+            List<Move> moves = new List<Move>();
+            mPieceManager.setBoard(mBoard);
+            string[,] boarddraught = mBoard.getDraughtAsStrings();
+            BoardDraught b = new BoardDraught(boarddraught, currentPlayer, mBoard.sizeX, mBoard.sizeY, pointAttacked, pointHide, pointThreat, 0);
+            float test;
+            Move currentMove = new Move();
+
+            test = AIManager.Minimax(b, currentPlayer, maxDepth, 0, ref currentMove);
+
+            //  Debug.Log("Moves Again: " + m.mPiece.name + " CurrentCell: " + m.mPiece.getCurrentCell().name + " TargetCell: " + mBoard.mAllCells[m.x, m.y].name);//.mPiece.getTargetCell().name);
+            // StartCoroutine(ExecuteMoveAfterDelay(1));
+            List<Piece> blist = mPieceManager.getBPieces();
+            for (int i = 0; i < blist.ToArray().Length; i++)
+            {
+                if (blist.ToArray()[i].name == currentMove.mPieceName)
+                {
+                    blist.ToArray()[i].CheckPath(currentMove);
+                    blist.ToArray()[i].ShowCells();
+                    //StartCoroutine(ExecuteHighlightAfterDelay(1, i, currentMove));
+
+                    StartCoroutine(ExecuteMoveAfterDelay((float)1.5, i, currentMove));
+
+                    break;
+                }
+            }
+            yield return new WaitForSeconds(5f);
+
+        }
+        else if (currentPlayer == 1 && AIActive == 2)
+        {
+            List<Move> moves = new List<Move>();
+            mPieceManager.setBoard(mBoard);
+            string[,] boarddraught = mBoard.getDraughtAsStrings();
+            BoardDraught b = new BoardDraught(boarddraught, currentPlayer, mBoard.sizeX, mBoard.sizeY, pointAttacked, pointHide, pointThreat, pointHighThreat2);
+            float test;
+            Move currentMove = new Move();
+
+            test = AIManager.Minimax(b, currentPlayer, maxDepth, 0, ref currentMove);
+
+            //  Debug.Log("Moves Again: " + m.mPiece.name + " CurrentCell: " + m.mPiece.getCurrentCell().name + " TargetCell: " + mBoard.mAllCells[m.x, m.y].name);//.mPiece.getTargetCell().name);
+            // StartCoroutine(ExecuteMoveAfterDelay(1));
+            List<Piece> wlist = mPieceManager.getWPieces();
+            for (int i = 0; i < wlist.ToArray().Length; i++)
+            {
+                if (wlist.ToArray()[i].name == currentMove.mPieceName)
+                {
+                    wlist.ToArray()[i].CheckPath(currentMove);
+                    wlist.ToArray()[i].ShowCells();
+                    //StartCoroutine(ExecuteHighlightAfterDelay(1, i, currentMove));
+
+                    StartCoroutine(ExecuteMoveAfterDelay((float)1.5, i, currentMove));
+
+                    break;
+                }
+            }
+            yield return new WaitForSeconds(5f);
+
+        }
+    }*/
 
     IEnumerator ExecuteHighlightAfterDelay(float time, int idx, Move currentMove)
     {
@@ -120,46 +327,107 @@ public class GameManager : MonoBehaviour
     {
         if (GameOver() != null)
         {
-            Debug.Log(GameOver() + "wins.");
+            if (GameOver() == "Player 1" && AIActive != 2)
+            {
+                Debug.Log(GameOver() + "wins.");
+                GameObject.FindGameObjectWithTag("WinTag").GetComponent<TMPro.TextMeshProUGUI>().text = "YOU WIN!";
+
+            }
+            else if (GameOver() == "Player 2" && AIActive != 2)
+            {
+                GameObject.FindGameObjectWithTag("WinTag").GetComponent<TMPro.TextMeshProUGUI>().text = "YOU LOSE!";
+
+                Debug.Log(GameOver() + "wins.");
+            }
         }
         if (currentPlayer == 2)
         {
-           // StartCoroutine(ExecuteMoveAfterDelay(1));
-           MovePiece();
+           // StartCoroutine(Move());
+             MovePiece();
     }
-}
+        else if (currentPlayer == 1 && AIActive == 2)
+        {
+            //StartCoroutine(Move());
+
+            MovePiece();
+        }
+    }
 
     IEnumerator ExecuteMoveAfterDelay(float time, int idx, Move currentMove)
     {
         //Print the time of when the function is first called.
         //Debug.Log("Started Coroutine at timestamp : " + Time.time);
-
+        while (moving)
+        {
+            yield return new WaitForSeconds(time);
+        }
+        moving = true;
         //yield on a new YieldInstruction that waits for 5 seconds.
-        yield return new WaitForSeconds(time);
         // MovePiece();
-        List<Piece> blist = mPieceManager.getBPieces();
-        blist.ToArray()[idx].PlaceByAI(mBoard.mAllCells[currentMove.x, currentMove.y]);
-        blist.ToArray()[idx].ClearCells();
+        if (currentPlayer == 1 & AIActive == 2)
+        {
 
+            List<Piece> wlist = mPieceManager.getWPieces();
+            wlist.ToArray()[idx].ShowCells();
+
+            yield return new WaitForSeconds(time);
+
+            wlist.ToArray()[idx].PlaceByAI(mBoard.mAllCells[currentMove.x, currentMove.y]);
+
+            wlist.ToArray()[idx].ClearCells();
+            moving = false;
+
+        }
+        else if (currentPlayer == 2)
+        {
+            List<Piece> blist = mPieceManager.getBPieces();
+            blist.ToArray()[idx].ShowCells();
+
+            yield return new WaitForSeconds(time);
+
+            blist.ToArray()[idx].PlaceByAI(mBoard.mAllCells[currentMove.x, currentMove.y]);
+
+            blist.ToArray()[idx].ClearCells();
+
+            moving = false;
+        }
 
     }
     public void nextPlayer()
     {
-        if (GameOver() != null)
+        if (GameOver() != null && AIActive ==2)
+        {
+            mPieceManager.ResetPieces(true);
+        }
+
+        else if (GameOver() != null && AIActive != 2)
         {
             Debug.Log(GameOver() + "wins.");
-            //mBoard.NextPlayer();
-            //nextPlayer();
+            
+            if (GameOver() == "Player 1")
+                GameObject.FindGameObjectWithTag("WinTag").GetComponent<TMPro.TextMeshProUGUI>().text = "YOU WIN!";
+            else if (GameOver() == "Player 2")
+                GameObject.FindGameObjectWithTag("WinTag").GetComponent<TMPro.TextMeshProUGUI>().text = "YOU LOSE!";
+            //SceneManager.LoadScene(0);
         }
         else
         {
             if (currentPlayer == 0)
             {
                 currentPlayer = 1;
+                if (AIActive == 2)
+                {
+                    MovePiece();
+                }
             }
             else if (currentPlayer == 1)
             {
                 currentPlayer = 2;
+                MovePiece();
+
+            }else if (currentPlayer == 2 && AIActive == 2)
+            {
+                currentPlayer = 1;
                 MovePiece();
 
             }
@@ -182,30 +450,22 @@ public class GameManager : MonoBehaviour
 
     public string GameOver()
     {
-       // string[,] boarddraught = mBoard.getDraughtAsStrings();
-       // BoardDraught b = new BoardDraught(boarddraught, currentPlayer, mBoard.sizeX, mBoard.sizeY);
 
         if (mPieceManager.getBPieces().ToArray().Length < 2 || mBoard.IsGameOver())
             return "Player 1";
         else if (mPieceManager.getWPieces().ToArray().Length < 2 || mBoard.IsGameOver())
             return "Player 2";
-        else return null;
-    }
-   /* private void CopySpecialComponents(GameObject _sourceGO, GameObject _targetGO)
-    {
-        foreach (var component in _sourceGO.GetComponents<Component>())
+        else if (mBoard.GetMoves(1).ToArray().Length == 0)
         {
-            var componentType = component.GetType();
-            if (componentType != typeof(Transform) &&
-                componentType != typeof(MeshFilter) &&
-                componentType != typeof(MeshRenderer)
-                )
-            {
-                Debug.Log("Found a component of type " + component.GetType());
-                UnityEditorInternal.ComponentUtility.CopyComponent(component);
-                UnityEditorInternal.ComponentUtility.PasteComponentAsNew(_targetGO);
-                Debug.Log("Copied " + component.GetType() + " from " + _sourceGO.name + " to " + _targetGO.name);
-            }
+            return "Player 2";
         }
-    }*/
+        else if (mBoard.GetMoves(2).ToArray().Length == 0) 
+         { 
+                return "Player 1";
+        }
+        else
+            return null;
+        
+    }
+
 }

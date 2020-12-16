@@ -14,11 +14,11 @@ public class SimplePiece : Piece
         // GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("simplePiece"); simple Circle
         if (newTeamColor == Color.white)
         //GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("Prop_5");
-        GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("18");
+        GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("muschel");
 
         else if (newTeamColor == Color.black)
        //     GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("Prop_6");
-       GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("15");
+       GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("stone");
 
     }
 
