@@ -3,3 +3,10 @@ Library
 Library/
 /Library/*
 /Library
+Packages/
+Logs/
+.vs/latrun0-1/v16/.suo
+Assembly-CSharp.csproj
+ProjectSettings/TagManager.asset
+obj/Debug/Assembly-CSharp.csprojAssemblyReference.cache
+obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
